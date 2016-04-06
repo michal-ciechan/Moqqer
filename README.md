@@ -37,3 +37,5 @@ Moqqer also automatically stubs methods of an interface to return Mocks of the r
 ## Installing
 
 Find it on NuGet under MoqInjectionContainer
+
+https://www.nuget.org/packages/MoqInjectionContainer/
