@@ -1,5 +1,35 @@
 # Moqqer
 
-Use to your hearts content.
+Moqqer is a MockFactory/Repository/Container for Moq. It automatically injects mocks into the constructor of an application while keeping a reference to the Mock for future use.
 
-Usage Examples coming soon
+This helps to ease the pain of creating mocks each time, as welll less hassle when you change the constructors or refactor code.
+
+Moqqer also automatically stubs methods of an interface to return Mocks of the return type (where applicable).
+
+Example Usage
+
+    [TestClass]
+    public class ClassUnderTestTests
+    {
+        private Moqqer _moq;
+        private ClassUnderTest _subject;
+
+        [TestInitialize]
+        public void A_TestInit()
+        {
+            // Create instance of Moqqer
+            _moq = new Moqqer();
+            
+            // Create an instance of ClassUnderTest injecting mocks
+            _subject = _moq.Get<ClassUnderTest>();
+        }
+
+        [TestMethod]
+        public void DoWork_CallsRepositoryGetData()
+        {
+            _subject.DoWork();
+
+            _moq.Of<IRepository>()
+                .Verify(x => x.GetData(), Times.Once);
+        }
+    }
