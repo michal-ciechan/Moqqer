@@ -6,7 +6,7 @@ This helps to ease the pain of creating mocks each time, as welll less hassle wh
 
 Moqqer also automatically stubs methods of an interface to return Mocks of the return type (where applicable).
 
-Example Usage
+## Example Usage
 
     [TestClass]
     public class ClassUnderTestTests
@@ -33,3 +33,7 @@ Example Usage
                 .Verify(x => x.GetData(), Times.Once);
         }
     }
+
+## Installing
+
+Find it on NuGet under MoqInjectionContainer
