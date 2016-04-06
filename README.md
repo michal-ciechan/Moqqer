@@ -1,6 +1,6 @@
 # Moqqer
 
-Moqqer is a MockFactory/Repository/Container for Moq. It automatically injects mocks into the constructor of an application while keeping a reference to the Mock for future use.
+Moqqer is a MockFactory/Repository/Container for Moq. It automatically injects mocks into the constructor of an application while keeping a reference to the each injected Mock<> for future use.
 
 This helps to ease the pain of creating mocks each time, as welll less hassle when you change the constructors or refactor code.
 
