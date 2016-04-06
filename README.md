@@ -42,6 +42,6 @@ https://www.nuget.org/packages/MoqInjectionContainer/
 
 ## Source Code
 
-Currently the source code exists in [github/codePerf/MoqInjectionContainer][1] but will be migrated to here in the near future.
+Currently the source code exists in [github/codePerf/MoqInjectionContainer][OldSourceCode] but will be migrated to here in the near future.
 
-[1][https://github.com/michal-ciechan/codePERF/tree/master/MoqInjectionContainer]
+[OldSourceCode]: https://github.com/michal-ciechan/codePERF/tree/master/MoqInjectionContainer
