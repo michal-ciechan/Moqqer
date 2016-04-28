@@ -7,8 +7,8 @@
     <ProjectGuid>{695DBF3A-8187-4F48-B1CB-EEE037EE2800}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MoqInjectionContainerTests</RootNamespace>
-    <AssemblyName>MoqInjectionContainerTests</AssemblyName>
+    <RootNamespace>Moqqer.Namespace.Tests</RootNamespace>
+    <AssemblyName>Moqqer.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -75,9 +75,9 @@
     <Compile Include="Helpers\SomeClass.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MoqInjectionContainer\MoqInjectionContainer.csproj">
+    <ProjectReference Include="..\Moqqer\Moqqer.csproj">
       <Project>{A8D854DE-482C-4F15-9BC7-FE8A8041580D}</Project>
-      <Name>MoqInjectionContainer</Name>
+      <Name>Moqqer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

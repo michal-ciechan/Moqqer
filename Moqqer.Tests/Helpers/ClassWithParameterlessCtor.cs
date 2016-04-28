@@ -1,4 +1,4 @@
-﻿namespace MoqInjectionContainerTests.Helpers
+﻿namespace Moqqer.Namespace.Tests.Helpers
 {
     public class ClassWithParameterlessCtor
     {

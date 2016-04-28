@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace MoqInjectionContainer
+namespace Moqqer.Namespace
 {
     internal class MoqqerException : Exception
     {

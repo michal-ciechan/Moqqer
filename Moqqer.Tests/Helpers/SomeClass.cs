@@ -1,10 +1,9 @@
-﻿namespace MoqInjectionContainerTests.Helpers
+﻿namespace Moqqer.Namespace.Tests.Helpers
 {
     public class SomeClass
     {
         private readonly IDepencyA _a;
         private readonly IDepencyB _b;
-        public IMockSetup Mock { get; set; }
 
         public SomeClass(IDepencyA a, IDepencyB b, IMockSetup mock)
         {
@@ -12,6 +11,8 @@
             _b = b;
             Mock = mock;
         }
+
+        public IMockSetup Mock { get; set; }
 
         public void CallA()
         {

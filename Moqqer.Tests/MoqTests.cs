@@ -1,25 +1,37 @@
 using FluentAssertions;
 using Moq;
-using MoqInjectionContainerTests.Helpers;
+using Moqqer.Namespace.Tests.Helpers;
 using NUnit.Framework;
 
-namespace MoqInjectionContainerTests
+namespace Moqqer.Namespace.Tests
 {
     [TestFixture]
     public class MoqTests
     {
         [Test]
-        public void Moq_Setup_IsAny_ThenSpecific_CallsSpecific()
+        public void Moq_Setup_IsAny_CallsAany()
         {
             var mock = new Mock<IParameterisedMethodClass>();
 
             mock.Setup(q => q.Call(It.IsAny<int>())).Returns("Any");
 
-            mock.Setup(q => q.Call(25)).Returns("25");
 
             var res = mock.Object.Call(25);
 
-            res.Should().Be("25");
+            res.Should().Be("Any");
+        }
+
+        [Test]
+        public void Moq_Setup_IsAny_CallsAny()
+        {
+            var mock = new Mock<IParameterisedMethodClass>();
+
+            mock.Setup(q => q.Call(It.IsAny<int>())).Returns("Any");
+
+
+            var res = mock.Object.Call(25);
+
+            res.Should().Be("Any");
         }
 
         [Test]
@@ -37,29 +49,17 @@ namespace MoqInjectionContainerTests
         }
 
         [Test]
-        public void Moq_Setup_IsAny_CallsAny()
+        public void Moq_Setup_IsAny_ThenSpecific_CallsSpecific()
         {
             var mock = new Mock<IParameterisedMethodClass>();
 
             mock.Setup(q => q.Call(It.IsAny<int>())).Returns("Any");
 
+            mock.Setup(q => q.Call(25)).Returns("25");
 
             var res = mock.Object.Call(25);
 
-            res.Should().Be("Any");
-        }
-
-        [Test]
-        public void Moq_Setup_IsAny_CallsAany()
-        {
-            var mock = new Mock<IParameterisedMethodClass>();
-
-            mock.Setup(q => q.Call(It.IsAny<int>())).Returns("Any");
-
-
-            var res = mock.Object.Call(25);
-
-            res.Should().Be("Any");
+            res.Should().Be("25");
         }
     }
 }

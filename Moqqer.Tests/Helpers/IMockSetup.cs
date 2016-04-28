@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace MoqInjectionContainerTests.Helpers
+﻿namespace Moqqer.Namespace.Tests.Helpers
 {
     public interface IMockSetup
     {

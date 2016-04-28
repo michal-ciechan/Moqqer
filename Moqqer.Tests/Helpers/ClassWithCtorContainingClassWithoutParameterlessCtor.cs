@@ -1,12 +1,12 @@
-namespace MoqInjectionContainerTests.Helpers
+namespace Moqqer.Namespace.Tests.Helpers
 {
     public class ClassWithCtorContainingClassWithoutParameterlessCtor
     {
-        public ClassWithParameterlessCtor CtorParam { get; set; }
-
         public ClassWithCtorContainingClassWithoutParameterlessCtor(ClassWithParameterlessCtor ctorParam)
         {
             CtorParam = ctorParam;
         }
+
+        public ClassWithParameterlessCtor CtorParam { get; set; }
     }
 }
