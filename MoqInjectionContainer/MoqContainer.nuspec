@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <projectUrl>https://github.com/michal-ciechan/codePERF/tree/master/MoqContainer</projectUrl>
+    <!-- <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl> -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial Release with basic functionality.</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>Moq Factory Repository Container Resolve Verify Moqqer</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\net40\MoqInjectionContainer.*" target="lib\net40\" />
+  </files>
+</package>
