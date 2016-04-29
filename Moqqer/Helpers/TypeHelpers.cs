@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Moqqer.Namespace.Helpers
+namespace MoqqerNamespace.Helpers
 {
     internal static class TypeHelpers
     {

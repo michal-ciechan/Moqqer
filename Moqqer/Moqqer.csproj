@@ -7,7 +7,7 @@
     <ProjectGuid>{A8D854DE-482C-4F15-9BC7-FE8A8041580D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Moqqer.Namespace</RootNamespace>
+    <RootNamespace>MoqqerNamespace</RootNamespace>
     <AssemblyName>Moqqer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -1,12 +1,11 @@
 ﻿using System;
 using FluentAssertions;
 using Moq;
-using Moqqer.Namespace;
-using Moqqer.Namespace.Extensions;
-using Moqqer.Namespace.Tests.TestClasses;
+using MoqqerNamespace.Extensions;
+using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
 
-namespace Moqqer.Namespace.Tests.MoqExtensions
+namespace MoqqerNamespace.Tests.MoqExtensions
 {
     [TestFixture]
     public class MoqFluentVerifyBuilderTests

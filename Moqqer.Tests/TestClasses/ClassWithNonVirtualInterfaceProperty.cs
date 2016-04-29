@@ -1,4 +1,4 @@
-namespace Moqqer.Namespace.Tests.TestClasses
+namespace MoqqerNamespace.Tests.TestClasses
 {
     public class ClassWithNonVirtualInterfaceProperty
     {

@@ -7,7 +7,7 @@
     <ProjectGuid>{695DBF3A-8187-4F48-B1CB-EEE037EE2800}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Moqqer.Namespace.Tests</RootNamespace>
+    <RootNamespace>MoqqerNamespace.Tests</RootNamespace>
     <AssemblyName>Moqqer.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

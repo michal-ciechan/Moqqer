@@ -1,13 +1,10 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Moq;
+using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
-
 // ReSharper disable once RedundantUsingDirective
-using Moqqer.Namespace;
-using Moqqer.Namespace.Tests.TestClasses;
 
-namespace Moqqer.Namespace.Tests.Samples
+namespace MoqqerNamespace.Tests.Samples
 {
     [TestFixture]
     public class FeatureTests

@@ -1,8 +1,8 @@
 ﻿using Moq;
-using Moqqer.Namespace.Tests.TestClasses;
+using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
 
-namespace Moqqer.Namespace.Tests.Samples
+namespace MoqqerNamespace.Tests.Samples
 {
     [TestFixture]
     public class IntroExampleTests

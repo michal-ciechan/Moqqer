@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Moq;
-using Moqqer.Namespace.Tests.TestClasses;
+using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
 
-namespace Moqqer.Namespace.Tests.Moq
+namespace MoqqerNamespace.Tests.Moq
 {
     [TestFixture]
     public class MoqTests

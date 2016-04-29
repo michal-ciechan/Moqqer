@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using FluentAssertions;
-using Moqqer.Namespace.Helpers;
-using Moqqer.Namespace.Tests.TestClasses;
+using MoqqerNamespace.Helpers;
+using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
 
-namespace Moqqer.Namespace.Tests.Helpers
+namespace MoqqerNamespace.Tests.Helpers
 {
     public class TypeHelperTests
     {

@@ -2,10 +2,10 @@
 using System.Reflection;
 using FluentAssertions;
 using Moq;
-using Moqqer.Namespace.Tests.TestClasses;
+using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
 
-namespace Moqqer.Namespace.Tests
+namespace MoqqerNamespace.Tests
 {
     [TestFixture]
     public class MoqqerTests

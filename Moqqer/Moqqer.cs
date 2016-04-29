@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Moq;
-using Moqqer.Namespace.Helpers;
+using MoqqerNamespace.Helpers;
 
-namespace Moqqer.Namespace
+namespace MoqqerNamespace
 {
     public class MoqFactory
     {

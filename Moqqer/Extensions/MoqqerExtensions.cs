@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using Moq;
 
-namespace Moqqer.Namespace.Extensions
+namespace MoqqerNamespace.Extensions
 {
     public static class MoqqerExtensions
     {
