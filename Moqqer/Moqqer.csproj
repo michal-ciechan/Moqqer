@@ -54,10 +54,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\MoqqerExtensions.cs" />
     <Compile Include="Moqqer.cs" />
     <Compile Include="MoqqerException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeHelpers.cs" />
+    <Compile Include="Helpers\TypeHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Moqqer.nuspec">
@@ -65,23 +66,21 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MoqExtensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild">
   </Target>
+  <!--
   <Target Name="AfterBuild">
-    <!-- Load up the information from the assembly -->
     <GetAssemblyIdentity AssemblyFiles="$(OutputPath)$(AssemblyName).dll">
       <Output TaskParameter="Assemblies" ItemName="OutputAssemblyInfo" />
     </GetAssemblyIdentity>
     <Message Text="Info: %(OutputAssemblyInfo.Version)" />
-    <!-- package with NuGet -->
     <RemoveDir Directories="NuGet" />
     <MakeDir Directories="NuGet" />
     <Exec WorkingDirectory="$(ProjectDir)" Command="nuget.exe pack $(ProjectFileName) -Symbols -OutputDir &quot;NuGet&quot; -Verbosity detailed -Prop Configuration=$(Configuration);" />
   </Target>
+  -->
   <Target Name="Package">
     <!-- Ensure the Package directory exists for this project -->
     <!-- Package the project -->

@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 // ReSharper disable once RedundantUsingDirective
 using Moqqer.Namespace;
-using Moqqer.Namespace.Tests.Classes;
+using Moqqer.Namespace.Tests.TestClasses;
 
 namespace Moqqer.Namespace.Tests.Samples
 {
@@ -69,5 +69,15 @@ namespace Moqqer.Namespace.Tests.Samples
             _moq.Mocks.Should().ContainKey(typeof(IBranch));
         }
 
+        [Test]
+        public void ConcreteClassInjection()
+        {
+            var subject = _moq.Create<ClassHavingParameterlessConcreteClass>();
+
+            var classObject = subject.Class;
+            var moqedObject = _moq.Object<ParameterlessClass>();
+
+            classObject.Should().BeSameAs(moqedObject);
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Moq;
-using Moqqer.Namespace.Tests.Classes;
+using Moqqer.Namespace.Tests.TestClasses;
 using NUnit.Framework;
 
 namespace Moqqer.Namespace.Tests.Samples

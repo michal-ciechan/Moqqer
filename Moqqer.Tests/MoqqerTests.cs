@@ -2,7 +2,7 @@
 using System.Reflection;
 using FluentAssertions;
 using Moq;
-using Moqqer.Namespace.Tests.Classes;
+using Moqqer.Namespace.Tests.TestClasses;
 using NUnit.Framework;
 
 namespace Moqqer.Namespace.Tests
@@ -84,7 +84,7 @@ namespace Moqqer.Namespace.Tests
         public void Object_ClassWithCtorContainingClassWithParameterlessCtor_ShouldInjectDefaultObject()
         {
             TestDelegate action =
-                () => _moq.Object<ClassWithCtorContainingClassWithParameterlessCtor>();
+                () => _moq.Object<ClassHavingParameterlessConcreteClass>();
 
             Assert.That(action, Throws.TypeOf<MoqqerException>());
         }
@@ -94,7 +94,7 @@ namespace Moqqer.Namespace.Tests
         public void Object_ClassWithCtorContainingClassWithParameterlessCtor_ShouldReturn()
         {
             TestDelegate action =
-                () => _moq.Object<ClassWithCtorContainingClassWithParameterlessCtor>();
+                () => _moq.Object<ClassHavingParameterlessConcreteClass>();
 
             Assert.That(action, Throws.TypeOf<MoqqerException>());
         }

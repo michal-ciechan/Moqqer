@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Moqqer.Namespace
+namespace Moqqer.Namespace.Helpers
 {
     internal static class TypeHelpers
     {
@@ -19,7 +19,10 @@ namespace Moqqer.Namespace
             return type
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(
-                    x => x.ReturnType.IsInterface && !x.IsGenericMethod && !x.IsGenericMethodDefinition && x.IsVirtual);
+                    x => x.ReturnType.IsInterface 
+                    && !x.IsGenericMethod 
+                    && !x.IsGenericMethodDefinition 
+                    && x.IsVirtual);
         }
 
         public static ConstructorInfo FindConstructor(this Type type)

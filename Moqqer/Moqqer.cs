@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Moq;
+using Moqqer.Namespace.Helpers;
 
 namespace Moqqer.Namespace
 {
@@ -77,7 +78,7 @@ namespace Moqqer.Namespace
 
             var res = ctor.Invoke(null);
 
-            Objects.Add(type, ctor);
+            Objects.Add(type, res);
 
             return res;
         }

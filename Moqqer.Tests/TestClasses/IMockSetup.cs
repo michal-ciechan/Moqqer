@@ -1,4 +1,4 @@
-﻿namespace Moqqer.Namespace.Tests.Classes
+﻿namespace Moqqer.Namespace.Tests.TestClasses
 {
     public interface IMockSetup
     {

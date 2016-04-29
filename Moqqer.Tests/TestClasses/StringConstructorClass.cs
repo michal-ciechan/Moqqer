@@ -1,4 +1,4 @@
-﻿namespace Moqqer.Namespace.Tests.Classes
+﻿namespace Moqqer.Namespace.Tests.TestClasses
 {
     public class StringConstructorClass
     {
@@ -9,4 +9,6 @@
             Text = text;
         }
     }
+
+
 }

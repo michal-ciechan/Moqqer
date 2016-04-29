@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("MoqInjectionContainer")]
 [assembly:
     AssemblyDescription(
-        "An Auto Mocker for mOQ Moq Mock<> Factory/Repository that acts like a IoC Container and creates default mocks which all you have to do is verify."
+        "An Auto Mocker for Moq that acts like a IoC Container and creates default mocks recursively which all you have to do is verify."
         )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michal Ciechan @ Codeperf.net")]
