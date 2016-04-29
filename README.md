@@ -1,6 +1,9 @@
+# Moqqer
+
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Moqqer Intro](#moqqer-intro)
+- [Moqqer](#moqqer)
+- [Intro](#intro)
 - [Usage](#usage)
 - [Example](#example)
 - [Features](#features)
@@ -16,7 +19,7 @@
 
 <!-- /TOC -->
 
-# Moqqer Intro
+# Intro
 
 Moqqer is an AutoMocker for Moq.
 
