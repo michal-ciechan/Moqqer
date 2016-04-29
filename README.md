@@ -148,7 +148,7 @@ When Moqqer does recursive overriding, it only overrides the current class, and 
 # Non Mockable Defaults
 
 |Type  |  Defaulted To|
-|--|--|
+|---|---|
 |Mockable Object | `Mock<T>`|
 |`String`  |  `String.Empty`|
 |`List<T>` |  `new List<T>()`|
