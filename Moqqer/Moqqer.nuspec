@@ -15,6 +15,6 @@
     <tags>Moqqer AutoMoq AutoMoqqer Auto Moq Factory Repository Container Resolve Verify</tags>
   </metadata>
   <files>
-    <file src="bin\Release\net40\MoqInjectionContainer.*" target="lib\net40\" />
+    <file src="bin\Release\MoqInjectionContainer.*" target="lib\net40\" />
   </files>
 </package>
