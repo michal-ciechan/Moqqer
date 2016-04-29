@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Moqqer.Namespace.Tests.Helpers
+namespace Moqqer.Namespace.Tests.Classes
 {
     public interface IInterfaceWithGenericMethod
     {

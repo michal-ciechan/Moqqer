@@ -6,13 +6,13 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <projectUrl>https://github.com/michal-ciechan/codePERF/tree/master/MoqContainer</projectUrl>
+    <projectUrl>https://github.com/michal-ciechan/Moqqer</projectUrl>
     <!-- <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl> -->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial Release with basic functionality.</releaseNotes>
+    <releaseNotes>Auto Mock and auto setup your dependencies and objects.</releaseNotes>
     <copyright>Copyright 2015</copyright>
-    <tags>Moq Factory Repository Container Resolve Verify Moqqer</tags>
+    <tags>Moqqer AutoMoq AutoMoqqer Auto Moq Factory Repository Container Resolve Verify</tags>
   </metadata>
   <files>
     <file src="bin\Release\net40\MoqInjectionContainer.*" target="lib\net40\" />

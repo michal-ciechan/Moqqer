@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using Moq;
-using Moqqer.Namespace.Tests.Helpers;
+using Moqqer.Namespace.Tests.Classes;
 using NUnit.Framework;
 
 namespace Moqqer.Namespace.Tests
@@ -11,84 +10,34 @@ namespace Moqqer.Namespace.Tests
     [TestFixture]
     public class MoqqerTests
     {
-        private MockRepository _factory;
         private Moqqer _moq;
-        private SomeClass _subject;
 
         [SetUp]
         public void A_Setup()
         {
             _moq = new Moqqer();
 
-            _factory = new MockRepository(MockBehavior.Default) {DefaultValue = DefaultValue.Mock};
-
-            _subject = _moq.Create<SomeClass>();
         }
 
 
         [Test]
         public void CallA_CallsDependencyA()
         {
-            _subject.CallA();
+            var subject = _moq.Create<SomeClass>();
+
+            subject.CallA();
 
             _moq.Of<IDepencyA>().Verify(x => x.Call(), Times.Once);
         }
 
-        [Test]
-        public void GetMockableMethods_ClassWithNonVirtualInterfaceProperty_ReturnsAllPublic()
-        {
-            var type = typeof(ClassWithNonVirtualInterfaceProperty);
-
-            var methods = Moqqer.GetMockableMethods(type).Select(x => x.Name).ToList();
-
-            methods.Should().BeEquivalentTo();
-        }
-
-        [Test]
-        public void GetMockableMethods_ClassWithNonVirtualNullableProperty_ReturnsAllPublic()
-        {
-            var type = typeof(ClassWithNonVirtualNullableProperty);
-
-            var methods = Moqqer.GetMockableMethods(type).Select(x => x.Name).ToList();
-
-            methods.Should().BeEquivalentTo();
-        }
-
-
-        [Test]
-        public void GetMockableMethods_ClassWithNonVirtualProperty_ReturnsAllPublic()
-        {
-            var type = typeof(ClassWithNonVirtualProperty);
-
-            var methods = Moqqer.GetMockableMethods(type).Select(x => x.Name).ToList();
-
-            methods.Should().BeEquivalentTo();
-        }
-
-        [Test]
-        public void GetMockableMethods_IInterfaceWithGenericMethod_DoesNotReturnGenericMethod()
-        {
-            var type = typeof(IInterfaceWithGenericMethod);
-
-            var methods = Moqqer.GetMockableMethods(type).Select(x => x.Name).ToList();
-
-            methods.Should().BeEmpty();
-        }
-
-        [Test]
-        public void GetMockableMethods_IMockSetup_ReturnsAllPublic()
-        {
-            var type = typeof(IMockSetup);
-
-            var methods = Moqqer.GetMockableMethods(type).Select(x => x.Name).ToList();
-
-            methods.Should().BeEquivalentTo("GetA", "GetB");
-        }
+ 
 
         [Test]
         public void Mock_Call_ParameterlessMethod_ReturningInterface_ReturnsMockedInterface()
         {
-            var res = _subject.Mock.GetA();
+            var subject = _moq.Create<SomeClass>();
+
+            var res = subject.Mock.GetA();
 
             res.Should().NotBeNull();
         }
@@ -97,24 +46,28 @@ namespace Moqqer.Namespace.Tests
         public void MockGet_ClassWithNonVirtualInterfaceProperty_CanSetup()
         {
             var res = _moq.Of<ClassWithNonVirtualInterfaceProperty>();
+            res.Should().NotBeNull();
         }
 
         [Test]
         public void MockGet_ClassWithNonVirtualNullableProperty_CanSetup()
         {
             var res = _moq.Create<ClassWithNonVirtualNullableProperty>();
+            res.Should().NotBeNull();
         }
 
         [Test]
         public void MockGet_ClassWithNonVirtualProperty_CanSetup()
         {
             var res = _moq.Create<ClassWithNonVirtualProperty>();
+            res.Should().NotBeNull();
         }
 
         [Test]
         public void MockOf_IInterfaceWithGenericMethod_CanSetup()
         {
             var res = _moq.Of<IInterfaceWithGenericMethod>();
+            res.Should().NotBeNull();
         }
 
         [Test]

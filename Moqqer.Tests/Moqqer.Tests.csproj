@@ -57,22 +57,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\ClassWithCtorContainingClassWithoutParameterlessCtor.cs" />
-    <Compile Include="Helpers\ClassWithCtorContainingClassWithParameterlessCtor.cs" />
-    <Compile Include="Helpers\ClassWithNonVirtualInterfaceProperty.cs" />
-    <Compile Include="Helpers\ClassWithNonVirtualNullableProperty.cs" />
-    <Compile Include="Helpers\ClassWithNonVirtualProperty.cs" />
-    <Compile Include="Helpers\ClassWithoutParameterlessCtor.cs" />
-    <Compile Include="Helpers\ClassWithParameterlessCtor.cs" />
-    <Compile Include="Helpers\IMockSetup.cs" />
-    <Compile Include="Helpers\IInterfaceWithGenericMethod.cs" />
-    <Compile Include="Helpers\IParameterisedMethodClass.cs" />
+    <Compile Include="Classes\ClassWithCtorContainingClassWithoutParameterlessCtor.cs" />
+    <Compile Include="Classes\ClassWithCtorContainingClassWithParameterlessCtor.cs" />
+    <Compile Include="Classes\ClassWithNonVirtualInterfaceProperty.cs" />
+    <Compile Include="Classes\ClassWithNonVirtualNullableProperty.cs" />
+    <Compile Include="Classes\ClassWithNonVirtualProperty.cs" />
+    <Compile Include="Classes\ClassWithoutParameterlessCtor.cs" />
+    <Compile Include="Classes\ClassWithParameterlessCtor.cs" />
+    <Compile Include="Classes\IMockSetup.cs" />
+    <Compile Include="Classes\IInterfaceWithGenericMethod.cs" />
+    <Compile Include="Classes\IParameterisedMethodClass.cs" />
+    <Compile Include="Classes\StringConstructorClass.cs" />
     <Compile Include="MoqqerTests.cs" />
-    <Compile Include="Helpers\IDepencyA.cs" />
-    <Compile Include="Helpers\IDepencyB.cs" />
+    <Compile Include="Classes\IDepencyA.cs" />
+    <Compile Include="Classes\IDepencyB.cs" />
     <Compile Include="MoqTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Helpers\SomeClass.cs" />
+    <Compile Include="Classes\SomeClass.cs" />
+    <Compile Include="Samples\IntroExampleTests.cs" />
+    <Compile Include="Samples\FeatureTests.cs" />
+    <Compile Include="TypeHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Moqqer\Moqqer.csproj">

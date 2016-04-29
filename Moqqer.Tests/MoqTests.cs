@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Moq;
-using Moqqer.Namespace.Tests.Helpers;
+using Moqqer.Namespace.Tests.Classes;
 using NUnit.Framework;
 
 namespace Moqqer.Namespace.Tests

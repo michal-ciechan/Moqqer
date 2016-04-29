@@ -3,65 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Moq;
-using Moq.Language.Flow;
 
-namespace MoqInjectionContainer
+namespace Moqqer.Namespace
 {
+    public class MoqFactory
+    {
+        
+    }
+
     public class Moqqer
     {
+        internal static MethodInfo ObjectGenericMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
-        internal static MethodInfo ObjectGenericMethod;
 
-
-        static Moqqer ()
+        public Moqqer()
         {
-            var moqType = typeof (Moqqer);
-
-            ObjectGenericMethod = GetGenericMethod(moqType, "GetInstance");
+            Objects.Add(typeof(string), string.Empty);
         }
 
-        public static MethodInfo GetGenericMethod(Type type, string methodName)
+        static Moqqer()
         {
-            var methods = type
-                .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                .Where(m => m.Name == methodName)
-                .ToList();
-
-            if (methods.Count == 0)
-                throw new Exception(String.Format("Could not find any methods named '{0}' on Type '{1}'", methodName, type.Name));
+            var moqType = typeof(Moqqer);
             
-            var genericMethods = methods
-                .Select(m => new
-                {
-                    Method = m,
-                    Args = m.GetGenericArguments()
-                })
-                .Where(x => x.Args.Length > 0)
-                .Select(x => x.Method)
-                .ToList();
-
-            if(genericMethods.Count == 0)
-                throw new Exception(String.Format("Could not find any generic methods named '{0}' on Type '{1}'", methodName, type.Name));
-
-            if (genericMethods.Count > 1)
-                throw new Exception(String.Format("Found multiple generic methods named '{0}' on Type '{1}'", methodName, type.Name));
-         
-            return genericMethods[0];
-        }
-
-        public T Get<T>() where T : class
-        {
-            return Create<T>();
+            ObjectGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstance));
         }
 
         public T Create<T>() where T : class
         {
-            var type = typeof (T);
+            var type = typeof(T);
 
-            var ctor = FindConstructor(type);
+            var ctor = type.FindConstructor();
 
             var parameters = CreateParameters(ctor);
 
@@ -69,7 +42,19 @@ namespace MoqInjectionContainer
 
             return res as T;
         }
-        
+
+        [Obsolete("Use Create<T>(). Will be depreciated soon")]
+        public T Get<T>() where T : class
+        {
+            return Create<T>();
+        }
+
+        [Obsolete("")]
+        public Mock<T> Mock<T>() where T : class
+        {
+            return Of<T>();
+        }
+
         public T Object<T>() where T : class
         {
             var type = typeof(T);
@@ -79,17 +64,17 @@ namespace MoqInjectionContainer
 
         public object Object(Type type)
         {
-            if(IsMockable(type))
-                throw new MoqqerException("Type('" + type.Name + "')  is mockable. Use Create<T>() if you are looking to create an object with injection of mocks/objects. Or Use the Mock<T>() if you want to retrieve a mock of that type which was/will be injected.");
-            
+            if (IsMockable(type))
+                throw new MoqqerException($"Type('{type.Name}')  is mockable. Use Create<T>() if you are looking to create an object with injection of mocks/objects. Or Use the Mock<T>() if you want to retrieve a mock of that type which was/will be injected.");
+
             if (Objects.ContainsKey(type))
                 return Objects[type];
 
-            var ctor = GetDefaultCtor(type);
+            var ctor = TypeHelpers.GetDefaultCtor(type);
 
             if (ctor == null)
-                throw new MoqqerException("Cannot get Type('" + type.Name + "') as it does not have a default constructor. If you meant to create an object with injection into the Ctor use Create<T>()");
-            
+                throw new MoqqerException($"Cannot get Type('{type.Name}') as it does not have a default constructor. If you meant to create an object with injection into the Ctor use Create<T>()");
+
             var res = ctor.Invoke(null);
 
             Objects.Add(type, ctor);
@@ -97,14 +82,9 @@ namespace MoqInjectionContainer
             return res;
         }
 
-        public Mock<T> Mock<T>() where T : class
-        {
-            return Of<T>();
-        }
-
         public Mock<T> Of<T>() where T : class
         {
-            var type = typeof (T);
+            var type = typeof(T);
 
             if (Mocks.ContainsKey(type))
                 return Mocks[type] as Mock<T>;
@@ -119,7 +99,6 @@ namespace MoqInjectionContainer
         }
 
 
-
         public void VerifyAll()
         {
             foreach (var mock in Mocks.Values)
@@ -128,23 +107,50 @@ namespace MoqInjectionContainer
             }
         }
 
-        internal ConstructorInfo FindConstructor(Type type)
+        internal object[] CreateParameters(ConstructorInfo ctor)
         {
-            var ctors = type.GetConstructors();
+            var parameters = ctor.GetParameters();
 
-            var potentialCtors = ctors.Where(c => c.GetParameters().All(p => !p.ParameterType.IsValueType)).ToList();
+            var res = new object[parameters.Length];
 
-            if (potentialCtors.Count == 0)
-                throw new MoqqerException("Could not find any possible constructors for type: " + type.Name);
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var type = parameters[i].ParameterType;
 
-            var maxParams = potentialCtors.Max(c => c.GetParameters().Length);
+                res[i] = GetParameter(type);
+            }
 
-            return potentialCtors.First(c => c.GetParameters().Length == maxParams);
+            return res;
+        }
+
+
+
+        internal T GetInstance<T>()
+        {
+            return (T) GetInstance(typeof(T));
+        }
+
+        internal object GetInstance(Type type)
+        {
+            if (IsMockable(type))
+                return Of(type).Object;
+
+            return Object(type);
+        }
+
+        internal object GetParameter(Type type)
+        {
+            return GetInstance(type);
+        }
+
+        internal bool HasParameterlessCtor(Type type)
+        {
+            return null == TypeHelpers.GetDefaultCtor(type);
         }
 
         internal static Mock MockOfType(Type type)
         {
-            var mock = typeof (Mock<>);
+            var mock = typeof(Mock<>);
 
             var genericMock = mock.MakeGenericType(type);
 
@@ -167,13 +173,14 @@ namespace MoqInjectionContainer
 
         internal void SetupMockMethods(Mock mock, Type type)
         {
-            var methods = GetMockableMethods(type).ToList();
+            var methods = type.GetMockableMethods().ToList();
 
             if (!methods.Any()) return;
 
-            var mockType = typeof (Mock<>).MakeGenericType(type);
-            
-            var mockSetupFuncMethod = mockType.GetMethods().Single(x => x.Name == "Setup" && x.ContainsGenericParameters);
+            var mockType = typeof(Mock<>).MakeGenericType(type);
+
+            var mockSetupFuncMethod = mockType.GetMethods()
+                .Single(x => x.Name == "Setup" && x.ContainsGenericParameters);
 
             var itType = typeof(It);
             var isAnyMethod = itType.GetMethod("IsAny");
@@ -182,9 +189,10 @@ namespace MoqInjectionContainer
 
             foreach (var method in methods)
             {
-                var parameters =method.GetParameters();
-                var args = parameters.Select(x => Expression.Call(isAnyMethod.MakeGenericMethod(x.ParameterType))).ToArray();
-                
+                var parameters = method.GetParameters();
+                var args =
+                    parameters.Select(x => Expression.Call(isAnyMethod.MakeGenericMethod(x.ParameterType))).ToArray();
+
                 var reflectedExpression = Expression.Call(inputParameter, method, args);
 
                 var setupFuncType = typeof(Func<,>).MakeGenericType(type, method.ReturnType);
@@ -194,9 +202,10 @@ namespace MoqInjectionContainer
                 var genericMockSetupFuncMethod = mockSetupFuncMethod.MakeGenericMethod(method.ReturnType);
                 var setup = genericMockSetupFuncMethod.Invoke(mock, new object[] {lambda});
 
-                var funcType = typeof (Func<>).MakeGenericType(method.ReturnType);
+                var funcType = typeof(Func<>).MakeGenericType(method.ReturnType);
 
-                var delgate = Delegate.CreateDelegate(funcType, this, ObjectGenericMethod.MakeGenericMethod(method.ReturnType));
+                var delgate = Delegate.CreateDelegate(funcType, this,
+                    ObjectGenericMethod.MakeGenericMethod(method.ReturnType));
 
                 var setupType = setup.GetType();
 
@@ -206,61 +215,9 @@ namespace MoqInjectionContainer
             }
         }
 
-        internal static IEnumerable<MethodInfo> GetMockableMethods(Type type)
-        {
-            return type
-                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(x => x.ReturnType.IsInterface && !x.IsGenericMethod && !x.IsGenericMethodDefinition && x.IsVirtual);
-        }
-
-        internal object[] CreateParameters(ConstructorInfo ctor)
-        {
-            var parameters = ctor.GetParameters();
-
-            var res = new object[parameters.Length];
-
-            for (var i = 0; i < parameters.Length; i++)
-            {
-                var type = parameters[i].ParameterType;
-                
-                res[i] = GetParameter(type);
-            }
-
-            return res;
-        }
-
-        internal object GetParameter(Type type)
-        {
-                return GetInstance(type);
-        }
-
-        internal T GetInstance<T>()
-        {
-            return (T) GetInstance(typeof (T));
-        }
-        internal object GetInstance(Type type)
-        {
-            if(IsMockable(type))
-                return Of(type).Object;
-
-            return Object(type);
-        }
-
         private static bool IsMockable(Type type)
         {
             return type.IsInterface || type.IsAbstract;
-        }
-
-        internal bool HasParameterlessCtor(Type type)
-        {
-            return null == GetDefaultCtor(type);
-        }
-
-        private static ConstructorInfo GetDefaultCtor(Type type)
-        {
-            return type.GetConstructor(
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                null, Type.EmptyTypes, null);
         }
     }
 }
