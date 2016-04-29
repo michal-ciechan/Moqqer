@@ -12,7 +12,7 @@
     <description>$description$</description>
     <releaseNotes>Auto Mock and auto setup your dependencies and objects.</releaseNotes>
     <copyright>Copyright 2015</copyright>
-    <tags>Moqqer AutoMoq AutoMoqqer Auto Moq Factory Repository Container Resolve Verify</tags>
+    <tags>Moqqer AutoMoq AutoMoqqer Auto Moq Extensions Factory Repository Container Resolve Verify</tags>
   </metadata>
   <files>
     <file src="bin\Release\MoqInjectionContainer.*" target="lib\net40\" />

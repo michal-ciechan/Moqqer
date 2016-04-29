@@ -6,15 +6,15 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("MoqInjectionContainer")]
+[assembly: AssemblyTitle("Moqqer")]
 [assembly:
     AssemblyDescription(
         "An Auto Mocker for Moq that acts like a IoC Container and creates default mocks recursively which all you have to do is verify."
         )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michal Ciechan @ Codeperf.net")]
-[assembly: AssemblyProduct("MoqInjectionContainer")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyProduct("Moqqer")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("Codeperf")]
 [assembly: AssemblyCulture("")]
 
@@ -39,6 +39,6 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.0.0")]
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: AssemblyFileVersion("0.0.0.0")]
 [assembly: InternalsVisibleTo("Moqqer.Tests")]
