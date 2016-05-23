@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using Moq;
 using MoqqerNamespace.Helpers;
 
@@ -65,12 +66,15 @@ namespace MoqqerNamespace
 
         public object Object(Type type)
         {
-            if (IsMockable(type))
-                throw new MoqqerException($"Type('{type.Name}')  is mockable. Use Create<T>() if you are looking to create an object with injection of mocks/objects. Or Use the Mock<T>() if you want to retrieve a mock of that type which was/will be injected.");
-
             if (Objects.ContainsKey(type))
                 return Objects[type];
 
+            var def = Default(type);
+            if (def != null) return def;
+
+            if (IsMockable(type))
+                throw new MoqqerException($"Type('{type.Name}')  is mockable. Use Create<T>() if you are looking to create an object with injection of mocks/objects. Or Use the Mock<T>() if you want to retrieve a mock of that type which was/will be injected.");
+            
             var ctor = TypeHelpers.GetDefaultCtor(type);
 
             if (ctor == null)
@@ -78,9 +82,40 @@ namespace MoqqerNamespace
 
             var res = ctor.Invoke(null);
 
-            Objects.Add(type, res);
+            AddToObjects(type, res);
 
             return res;
+        }
+
+        private object AddToObjects(Type type, object res)
+        {
+            Objects.Add(type, res);
+            return res;
+        }
+
+        private object Default(Type type)
+        {
+            if (type.IsGenericType)
+                return DefaultGeneric(type);
+            
+            if (type == typeof(string))
+                return AddToObjects(type, string.Empty);
+
+            return null;
+        }
+
+        private object DefaultGeneric(Type type)
+        {
+            var generic = type.GetGenericTypeDefinition();
+
+            if (generic == typeof(IList<>))
+            {
+                var listType = typeof(List<>).MakeGenericType(type.GetGenericArguments());
+                var list = Object(listType);
+                return AddToObjects(type, list);
+            }
+
+            return null;
         }
 
         public Mock<T> Of<T>() where T : class

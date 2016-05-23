@@ -33,32 +33,30 @@ Moqqer also automatically stubs methods of an interface to return Mocks of the r
 
 # Usage
 
-1 - First create an instance of Moqqer which will act as a container for Mocks and Objects.
-
 ```csharp
+// 1 -  First create an instance of Moqqer which will
+//      act as a container for Mocks and Objects.
 _moq = new Moqqer();
-```
 
-2 - Get Moqqer to create an instance of some class you want to test. It will auto inject mocks in the its constructor.
-
-```csharp
+// 2 -  Get Moqqer to create an instance of some class you want to test.
+// It will auto inject mocks in the its constructor.
 _subject = _moq.Create<SomeClass>();
-```
 
-3 - Call the mothod you want to test on SomeClass
+// 3 -  Call the mothod you want to test on SomeClass
+_subject.CallA(); // Calls private field IDependencyA.Call()
 
-```csharp
-_subject.CallA();
-```
-
-4 - Verify a mock that was auto injected was called.
-
-```csharp
+// 4 -  Verify a mock that was auto injected was called.
 _moq.Of<IDepencyA>()
-    .Verify(x => x.Call(), Times.Once);
-```
+		.Verify(x => x.Call(), Times.Once);
 
-5 - Test and Refactor to your hearts content without worrying about changing the constructor calls!
+//      Alternatively use the Verify extension method
+_moq.Verify<IDepencyA>(x => x.Call())
+		.Once();
+
+// 5 -  Test and Refactor to your hearts content
+//      without worrying about changing the constructor calls!
+
+```
 
 # Example
 
@@ -174,17 +172,37 @@ root.Tree.Branch.Leaf.Grow();
 _moq.Mocks.Should().ContainKey(typeof(IBranch));
 ```
 
+## Quicker Verification:
+
+```csharp
+
+// Quickly Verify that a mock member was never called
+_moq.Verify<ILeaf>(x => x.Grow()).Never();
+
+// Or that it was called once
+_moq.Of<ILeaf>().Object.Grow();
+_moq.Verify<ILeaf>(x => x.Grow()).Once();
+
+// Or called X number of times
+_moq.Of<ILeaf>().Object.Grow();
+_moq.Verify<ILeaf>(x => x.Grow()).Times(2);
+
+// Or fallback to using the Moq.Times class
+_moq.Of<ILeaf>().Object.Grow();
+_moq.Verify<ILeaf>(x => x.Grow()).Times(Times.AtLeast(3));
+_moq.Verify<ILeaf>(x => x.Grow()).Times(Times.Between(3,7, Range.Inclusive));
+
+```
 # Moq Extensions
 
-
-
-# Non Mockable Defaults
+# Default Mocks
 
 |Type  |  Defaulted To
 |---|---
-|Mockable Object | `Mock<T>`
-|`String`  |  `String.Empty`
+|`string`  |  `string.Empty`
 |`List<T>` |  `new List<T>()`
+|`IList<T>` |  `new List<T>()`
+|Mockable Object | `Mock<T>`
 
 # Installing
 
@@ -194,15 +212,7 @@ https://www.nuget.org/packages/MoqInjectionContainer/
 
 # Roadmap
 
-## Quicker Verification:
 
-```csharp
-_moq.Verify<SomeClass>(x => x.A).Never();
-_moq.Verify<SomeClass>(x => x.A).Once();
-_moq.Verify<SomeClass>(x => x.A).Times(3);
-_moq.Verify<SomeClass>(x => x.A).AtLeast(5);
-_moq.Verify<SomeClass>(x => x.A).AtMost(5);
-```
 
 ## Method Name Selection
 

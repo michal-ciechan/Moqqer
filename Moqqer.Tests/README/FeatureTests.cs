@@ -1,10 +1,12 @@
 ﻿using FluentAssertions;
 using Moq;
+using MoqqerNamespace.Extensions;
 using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
+
 // ReSharper disable once RedundantUsingDirective
 
-namespace MoqqerNamespace.Tests.Samples
+namespace MoqqerNamespace.Tests.README
 {
     [TestFixture]
     public class FeatureTests
@@ -19,7 +21,6 @@ namespace MoqqerNamespace.Tests.Samples
             _moq = new Moqqer();
 
             // Create an instance of SomeClass injecting mocks into constructor
-
         }
 
         [Test]
@@ -75,6 +76,26 @@ namespace MoqqerNamespace.Tests.Samples
             var moqedObject = _moq.Object<ParameterlessClass>();
 
             classObject.Should().BeSameAs(moqedObject);
+        }
+
+        [Test]
+        public void QuickerVerification()
+        {
+            // Quickly Verify that a mock member was never called
+            _moq.Verify<ILeaf>(x => x.Grow()).Never();
+
+            // Or that it was called once
+            _moq.Of<ILeaf>().Object.Grow();
+            _moq.Verify<ILeaf>(x => x.Grow()).Once();
+
+            // Or called X number of times
+            _moq.Of<ILeaf>().Object.Grow();
+            _moq.Verify<ILeaf>(x => x.Grow()).Times(2);
+
+            // Or fallback to using the Moq.Times class
+            _moq.Of<ILeaf>().Object.Grow();
+            _moq.Verify<ILeaf>(x => x.Grow()).Times(Times.AtLeast(3));
+            _moq.Verify<ILeaf>(x => x.Grow()).Times(Times.Between(3,7, Range.Inclusive));
         }
     }
 }

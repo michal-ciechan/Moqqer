@@ -14,49 +14,14 @@
 
         public IMockSetup Mock { get; set; }
 
-        public void CallA()
+        public virtual void CallA()
         {
             A.Call();
         }
 
-        public void CallB()
+        public virtual void CallB()
         {
             B.Call();
         }
-    }
-
-    public class Root : IRoot
-    {
-        public ITree Tree { get; }
-
-        public Root(ITree tree)
-        {
-            Tree = tree;
-        }
-
-        public void Water()
-        {
-            Tree.Branch.Leaf.Grow();
-        }
-    }
-
-    public interface IRoot
-    {
-        ITree Tree { get; }
-    }
-
-    public interface ITree
-    {
-        IBranch Branch { get; }
-    }
-
-    public interface IBranch
-    {
-        ILeaf Leaf { get; }
-    }
-
-    public interface ILeaf
-    {
-        void Grow();
     }
 }
