@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="MoqExtensions\MoqFluentVerifyBuilderTests.cs" />
     <Compile Include="README\DefaultMocks.cs" />
+    <Compile Include="TestClasses\ClassWith2Ctors1ContainingClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassWithCtorContainingClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassHavingParameterlessConcreteClass.cs" />
     <Compile Include="TestClasses\ClassWithNonVirtualInterfaceProperty.cs" />

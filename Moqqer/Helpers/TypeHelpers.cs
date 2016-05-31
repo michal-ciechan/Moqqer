@@ -13,6 +13,10 @@ namespace MoqqerNamespace.Helpers
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                 null, Type.EmptyTypes, null);
         }
+        public static bool HasDefaultCtor(this Type type)
+        {
+            return GetDefaultCtor(type) != null;
+        }
 
         public static IEnumerable<MethodInfo> GetMockableMethods(this Type type)
         {
@@ -25,18 +29,28 @@ namespace MoqqerNamespace.Helpers
                     && x.IsVirtual);
         }
 
-        public static ConstructorInfo FindConstructor(this Type type)
+        public static ConstructorInfo FindConstructor(this Type type, Predicate<Type> canInject)
         {
             var ctors = type.GetConstructors();
 
-            var potentialCtors = ctors.Where(c => c.GetParameters().All(p => !p.ParameterType.IsValueType)).ToList();
+            var potentialCtors = ctors
+                .Where(c => c.GetParameters()
+                    .All(p => p.ParameterType.IsMockable()
+                              || p.ParameterType.HasDefaultCtor()
+                              || canInject(p.ParameterType)))
+                .ToList();
 
             if (potentialCtors.Count == 0)
                 throw new MoqqerException($"Could not find any possible constructors for type: {type.Name}");
 
-            var maxParams = potentialCtors.Max(c => c.GetParameters().Length);
+            return potentialCtors.OrderByDescending(x => x.GetParameters().Length).First();
 
-            return potentialCtors.First(c => c.GetParameters().Length == maxParams);
+        }
+
+
+        internal static bool IsMockable(this Type type)
+        {
+            return type.IsInterface || type.IsAbstract;
         }
 
         public static MethodInfo GetGenericMethod(this Type type, string methodName)

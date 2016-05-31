@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\MoqqerExtensions.cs" />
+    <Compile Include="MoqFactory.cs" />
     <Compile Include="Moqqer.cs" />
     <Compile Include="MoqqerException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

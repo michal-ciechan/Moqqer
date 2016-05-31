@@ -58,5 +58,30 @@ namespace MoqqerNamespace.Tests.Helpers
 
             methods.Should().BeEquivalentTo("GetA", "GetB");
         }
+
+        [Test]
+        public void FindConstructor_ClassWith2Ctors1ContainingClassWithoutParameterlessCtor_WhichCannotBeInjected_ReturnsCtorWithInterfaceParam()
+        {
+            var type = typeof(ClassWith2Ctors1ContainingClassWithoutParameterlessCtor);
+
+            var methods = type.FindConstructor(x => false)
+                .GetParameters()
+                .Select(x => x.ParameterType);
+
+            methods.Should().BeEquivalentTo(typeof(IBranch));
+        }
+
+        [Test]
+        public void FindConstructor_ClassWith2Ctors1ContainingClassWithoutParameterlessCtor_WhichCanBeInjected_ReturnsCtorWithBothParams()
+        {
+            var type = typeof(ClassWith2Ctors1ContainingClassWithoutParameterlessCtor);
+
+            var methods = type.FindConstructor(x => true)
+                .GetParameters()
+                .Select(x => x.ParameterType);
+
+            methods.Should().BeEquivalentTo(typeof(IBranch), typeof(ClassWithoutParameterlessCtor));
+        }
+
     }
 }

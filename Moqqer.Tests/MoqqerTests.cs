@@ -99,6 +99,31 @@ namespace MoqqerNamespace.Tests
             Assert.That(action, Throws.TypeOf<MoqqerException>());
         }
 
+        /// <summary>
+        /// Issue #1
+        /// </summary>
+        [Test]
+        public void Create_ClassWith2Ctors1ContainingClassWithoutParameterlessCtor_ShouldReturnObject()
+        {
+            var res = _moq.Create<ClassWith2Ctors1ContainingClassWithoutParameterlessCtor>();
+
+            res.Should().NotBeNull();
+            res.InterfaceParam.Should().NotBeNull();
+            res.ParameterlessCtorParam.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Issue #1
+        /// </summary>
+        [Test]
+        public void Create_ClassWith2Ctors1ContainingString_ShouldReturn()
+        {
+            var res = _moq.Create<ClassWith2Ctors1ContainingString>();
+
+            res.InterfaceParam.Should().NotBeNull();
+            res.String.Should().BeSameAs(string.Empty);
+        }
+
         [Test]
         public void SetupMockMethods_SomeClassGetA_ShouldNotBeNull()
         {

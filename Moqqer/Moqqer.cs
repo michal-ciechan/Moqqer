@@ -9,11 +9,6 @@ using MoqqerNamespace.Helpers;
 
 namespace MoqqerNamespace
 {
-    public class MoqFactory
-    {
-        
-    }
-
     public class Moqqer
     {
         internal static MethodInfo ObjectGenericMethod;
@@ -36,13 +31,27 @@ namespace MoqqerNamespace
         {
             var type = typeof(T);
 
-            var ctor = type.FindConstructor();
+            var ctor = type.FindConstructor(HasObjectOrDefault);
 
             var parameters = CreateParameters(ctor);
 
             var res = ctor.Invoke(parameters);
 
             return res as T;
+        }
+
+        internal bool HasObjectOrDefault(Type type)
+        {
+            if (Objects.ContainsKey(type))
+                return true;
+
+            if (Default(type) != null)
+                return true;
+
+            if (Objects.ContainsKey(type))
+                return true;
+
+            return false;
         }
 
         [Obsolete("Use Create<T>(). Will be depreciated soon")]
@@ -72,10 +81,10 @@ namespace MoqqerNamespace
             var def = Default(type);
             if (def != null) return def;
 
-            if (IsMockable(type))
+            if (type.IsMockable())
                 throw new MoqqerException($"Type('{type.Name}')  is mockable. Use Create<T>() if you are looking to create an object with injection of mocks/objects. Or Use the Mock<T>() if you want to retrieve a mock of that type which was/will be injected.");
             
-            var ctor = TypeHelpers.GetDefaultCtor(type);
+            var ctor = type.GetDefaultCtor();
 
             if (ctor == null)
                 throw new MoqqerException($"Cannot get Type('{type.Name}') as it does not have a default constructor. If you meant to create an object with injection into the Ctor use Create<T>()");
@@ -159,8 +168,6 @@ namespace MoqqerNamespace
             return res;
         }
 
-
-
         internal T GetInstance<T>()
         {
             return (T) GetInstance(typeof(T));
@@ -168,7 +175,7 @@ namespace MoqqerNamespace
 
         internal object GetInstance(Type type)
         {
-            if (IsMockable(type))
+            if (type.IsMockable())
                 return Of(type).Object;
 
             return Object(type);
@@ -251,9 +258,6 @@ namespace MoqqerNamespace
             }
         }
 
-        private static bool IsMockable(Type type)
-        {
-            return type.IsInterface || type.IsAbstract;
-        }
+
     }
 }
