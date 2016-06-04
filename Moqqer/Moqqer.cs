@@ -75,9 +75,6 @@ namespace MoqqerNamespace
 
         public object Object(Type type)
         {
-            if (Objects.ContainsKey(type))
-                return Objects[type];
-
             var def = Default(type);
             if (def != null) return def;
 
@@ -104,6 +101,9 @@ namespace MoqqerNamespace
 
         private object Default(Type type)
         {
+            if (Objects.ContainsKey(type))
+                return Objects[type];
+
             if (type.IsGenericType)
                 return DefaultGeneric(type);
             
@@ -175,6 +175,9 @@ namespace MoqqerNamespace
 
         internal object GetInstance(Type type)
         {
+            var def = Default(type);
+            if (def != null) return def;
+
             if (type.IsMockable())
                 return Of(type).Object;
 

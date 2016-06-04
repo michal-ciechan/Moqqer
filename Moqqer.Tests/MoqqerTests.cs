@@ -135,7 +135,7 @@ namespace MoqqerNamespace.Tests
         }
 
         /// <summary>
-        /// Issue #2
+        /// Issue #2 - GetInstance should return Default if exists.
         /// </summary>
         [Test]
         public void Create_ClassWithDefaultMethods_IListIsDefaultObjectsList()
