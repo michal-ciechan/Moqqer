@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using FluentAssertions;
 using Moq;
@@ -19,7 +20,6 @@ namespace MoqqerNamespace.Tests
 
         }
 
-
         [Test]
         public void CallA_CallsDependencyA()
         {
@@ -29,8 +29,6 @@ namespace MoqqerNamespace.Tests
 
             _moq.Of<IDepencyA>().Verify(x => x.Call(), Times.Once);
         }
-
- 
 
         [Test]
         public void Mock_Call_ParameterlessMethod_ReturningInterface_ReturnsMockedInterface()
@@ -122,6 +120,30 @@ namespace MoqqerNamespace.Tests
 
             res.InterfaceParam.Should().NotBeNull();
             res.String.Should().BeSameAs(string.Empty);
+        }
+        
+        /// <summary>
+        /// Issue #2
+        /// </summary>
+        [Test]
+        public void Create_ClassWithDefaultMethods_ListIsDefaultObjectsList()
+        {
+            var res = _moq.Create<ClassWithDefaultMethods>();
+
+            res.DefaultMethods.List()
+                .Should().BeSameAs(_moq.Object<List<string>>());
+        }
+
+        /// <summary>
+        /// Issue #2
+        /// </summary>
+        [Test]
+        public void Create_ClassWithDefaultMethods_IListIsDefaultObjectsList()
+        {
+            var res = _moq.Create<ClassWithDefaultMethods>();
+
+            res.DefaultMethods.ListInterface()
+                .Should().BeSameAs(_moq.Object<List<string>>());
         }
 
         [Test]

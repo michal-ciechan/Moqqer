@@ -216,7 +216,7 @@ namespace MoqqerNamespace
 
         internal void SetupMockMethods(Mock mock, Type type)
         {
-            var methods = type.GetMockableMethods().ToList();
+            var methods = type.GetMockableMethods(HasObjectOrDefault).ToList();
 
             if (!methods.Any()) return;
 

@@ -18,15 +18,16 @@ namespace MoqqerNamespace.Helpers
             return GetDefaultCtor(type) != null;
         }
 
-        public static IEnumerable<MethodInfo> GetMockableMethods(this Type type)
+        public static IEnumerable<MethodInfo> GetMockableMethods(this Type type, Predicate<Type> canInject)
         {
             return type
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(
-                    x => x.ReturnType.IsInterface 
+                    x => canInject(x.ReturnType) || (
+                    x.ReturnType.IsInterface 
                     && !x.IsGenericMethod 
                     && !x.IsGenericMethodDefinition 
-                    && x.IsVirtual);
+                    && x.IsVirtual));
         }
 
         public static ConstructorInfo FindConstructor(this Type type, Predicate<Type> canInject)

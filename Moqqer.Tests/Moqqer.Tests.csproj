@@ -62,11 +62,13 @@
     <Compile Include="TestClasses\ClassWith2Ctors1ContainingClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassWithCtorContainingClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassHavingParameterlessConcreteClass.cs" />
+    <Compile Include="TestClasses\ClassWithDefaultMethods.cs" />
     <Compile Include="TestClasses\ClassWithNonVirtualInterfaceProperty.cs" />
     <Compile Include="TestClasses\ClassWithNonVirtualNullableProperty.cs" />
     <Compile Include="TestClasses\ClassWithNonVirtualProperty.cs" />
     <Compile Include="TestClasses\ClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\IBranch.cs" />
+    <Compile Include="TestClasses\IDefaultMethods.cs" />
     <Compile Include="TestClasses\ILeaf.cs" />
     <Compile Include="TestClasses\IRoot.cs" />
     <Compile Include="TestClasses\ITree.cs" />

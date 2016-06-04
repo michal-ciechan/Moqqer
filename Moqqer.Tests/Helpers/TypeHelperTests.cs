@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using MoqqerNamespace.Helpers;
 using MoqqerNamespace.Tests.TestClasses;
@@ -13,9 +16,23 @@ namespace MoqqerNamespace.Tests.Helpers
         {
             var type = typeof(ClassWithNonVirtualInterfaceProperty);
 
-            var methods = type.GetMockableMethods().Select(x => x.Name).ToList();
+            var methods = type.GetMockableMethods(x => false).Select(x => x.Name).ToList();
 
             methods.Should().BeEquivalentTo();
+        }
+
+        /// <summary>
+        /// Issue #3
+        /// </summary>
+        [Test(Description = "Test That it will return methods which can be injected by Moqqer")]
+        public void GetMockableMethods_MethodNonMockableButCanInject_ReturnsMethod()
+        {
+            var type = typeof(IDefaultMethods);
+            
+            var methods = type.GetMockableMethods(t => t == typeof(List<string>))
+            .Select(x => x.Name).ToList();
+
+            methods.Should().Contain("List");
         }
 
         [Test]
@@ -23,7 +40,7 @@ namespace MoqqerNamespace.Tests.Helpers
         {
             var type = typeof(ClassWithNonVirtualNullableProperty);
 
-            var methods = type.GetMockableMethods().Select(x => x.Name).ToList();
+            var methods = type.GetMockableMethods(x => false).Select(x => x.Name).ToList();
 
             methods.Should().BeEquivalentTo();
         }
@@ -34,7 +51,7 @@ namespace MoqqerNamespace.Tests.Helpers
         {
             var type = typeof(ClassWithNonVirtualProperty);
 
-            var methods = type.GetMockableMethods().Select(x => x.Name).ToList();
+            var methods = type.GetMockableMethods(x => false).Select(x => x.Name).ToList();
 
             methods.Should().BeEquivalentTo();
         }
@@ -44,7 +61,7 @@ namespace MoqqerNamespace.Tests.Helpers
         {
             var type = typeof(IInterfaceWithGenericMethod);
 
-            var methods = type.GetMockableMethods().Select(x => x.Name).ToList();
+            var methods = type.GetMockableMethods(x => false).Select(x => x.Name).ToList();
 
             methods.Should().BeEmpty();
         }
@@ -54,7 +71,7 @@ namespace MoqqerNamespace.Tests.Helpers
         {
             var type = typeof(IMockSetup);
 
-            var methods = type.GetMockableMethods().Select(x => x.Name).ToList();
+            var methods = type.GetMockableMethods(x => false).Select(x => x.Name).ToList();
 
             methods.Should().BeEquivalentTo("GetA", "GetB");
         }
