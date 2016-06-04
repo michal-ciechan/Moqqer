@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using Moq;
 using MoqqerNamespace.Helpers;
 
@@ -11,7 +10,7 @@ namespace MoqqerNamespace
 {
     public class Moqqer
     {
-        internal static MethodInfo ObjectGenericMethod;
+        internal static readonly MethodInfo ObjectGenericMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
 
@@ -191,7 +190,7 @@ namespace MoqqerNamespace
 
         internal bool HasParameterlessCtor(Type type)
         {
-            return null == TypeHelpers.GetDefaultCtor(type);
+            return null == type.GetDefaultCtor();
         }
 
         internal static Mock MockOfType(Type type)
@@ -236,8 +235,8 @@ namespace MoqqerNamespace
             foreach (var method in methods)
             {
                 var parameters = method.GetParameters();
-                var args =
-                    parameters.Select(x => Expression.Call(isAnyMethod.MakeGenericMethod(x.ParameterType))).ToArray();
+                Expression[] args =
+                    parameters.Select(x => (Expression)Expression.Call(isAnyMethod.MakeGenericMethod(x.ParameterType))).ToArray();
 
                 var reflectedExpression = Expression.Call(inputParameter, method, args);
 
