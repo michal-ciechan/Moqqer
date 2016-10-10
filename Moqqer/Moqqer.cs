@@ -78,7 +78,7 @@ namespace MoqqerNamespace
             if (def != null) return def;
 
             if (type.IsMockable())
-                throw new MoqqerException($"Type('{type.Name}')  is mockable. Use Create<T>() if you are looking to create an object with injection of mocks/objects. Or Use the Mock<T>() if you want to retrieve a mock of that type which was/will be injected.");
+                throw new MoqqerException($"Type('{type.Name}')  is mockable. Use Create<T>() if you are looking to create an object with injection of mocks/objects. Or Use the Of<T>() if you want to retrieve a mock of that type which was/will be injected.");
             
             var ctor = type.GetDefaultCtor();
 
@@ -260,6 +260,12 @@ namespace MoqqerNamespace
             }
         }
 
+        public IMoqqerObjectContext Use<T>(T implementation)
+        {
+            var type = typeof(T);
 
+            Objects[type] = implementation;
+            return new MoqqerObjectContext(this, implementation, type);
+        }
     }
 }

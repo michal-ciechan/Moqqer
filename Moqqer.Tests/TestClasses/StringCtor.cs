@@ -1,10 +1,10 @@
 ﻿namespace MoqqerNamespace.Tests.TestClasses
 {
-    public class StringConstructorClass
+    public class StringCtor
     {
         public string Text { get; set; }
 
-        public StringConstructorClass(string text)
+        public StringCtor(string text)
         {
             Text = text;
         }

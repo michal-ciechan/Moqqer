@@ -12,11 +12,12 @@
 	- [Default Object Injection](#default-object-injection)
 	- [Recursive Mocking](#recursive-mocking)
 	- [Lazy Mocking](#lazy-mocking)
+	- [Quicker Verification:](#quicker-verification)
+	- [Concrete Implementation](#concrete-implementation)
 - [Moq Extensions](#moq-extensions)
-- [Non Mockable Defaults](#non-mockable-defaults)
+- [Default Mocks](#default-mocks)
 - [Installing](#installing)
 - [Roadmap](#roadmap)
-	- [Quicker Verification:](#quicker-verification)
 	- [Method Name Selection](#method-name-selection)
 
 <!-- /TOC -->
@@ -192,6 +193,30 @@ _moq.Of<ILeaf>().Object.Grow();
 _moq.Verify<ILeaf>(x => x.Grow()).Times(Times.AtLeast(3));
 _moq.Verify<ILeaf>(x => x.Grow()).Times(Times.Between(3,7, Range.Inclusive));
 
+```
+
+## Concrete Implementation
+
+```casharp
+// Create your concrete implementation
+var fizz = new Fizz(3);
+var buzz = new Buzz(5);
+
+// Set it as the implementation of an interface
+_moq.Use<IFizz>(fizz);
+_moq.Create<FizzBuzzGame>().Fizz.Should().BeSameAs(fizz);
+
+// Or use for all interfaces
+_moq.Use(buzz).ForAllImplementedInterfaces();
+_moq.Create<FizzBuzzGame>().Buzz.Should().BeSameAs(buzz);
+
+// Allow you to set a default value for value types
+_moq.Use(25);
+_moq.Create<Fizz>().Divisor.Should().Be(25);
+
+// Allow you to set a default value as well as reference types
+_moq.Use("GitHub");
+_moq.Create<StringCtor>().Text.Should().Be("GitHub");
 ```
 # Moq Extensions
 
