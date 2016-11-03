@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace MoqqerNamespace.Helpers
 {
-    internal static class TypeHelpers
+    internal static class TypeExtensions
     {
         public static ConstructorInfo GetDefaultCtor(this Type type)
         {
@@ -84,6 +84,52 @@ namespace MoqqerNamespace.Helpers
                 throw new Exception($"Found multiple generic methods named '{methodName}' on Type '{type.Name}'");
 
             return genericMethods[0];
+        }
+
+        public static bool IsClosedGenericAssignableToOpenGenericType(this Type closedGivenType, Type openGenericType)
+        {
+            var interfaceTypes = closedGivenType.GetInterfaces();
+
+            foreach (var it in interfaceTypes)
+            {
+                if (it.IsGenericType && it.GetGenericTypeDefinition() == openGenericType)
+                    return true;
+            }
+
+            if (closedGivenType.IsGenericType && closedGivenType.GetGenericTypeDefinition() == openGenericType)
+                return true;
+
+            Type baseType = closedGivenType.BaseType;
+            if (baseType == null) return false;
+
+            return IsClosedGenericAssignableToOpenGenericType(baseType, openGenericType);
+        }
+
+        public static bool IsOpenGenericAssignableToOpenGenericType(this Type openGenericFrom, Type openGenericTo)
+        {
+            if(!openGenericFrom.IsGenericType)
+                throw new ArgumentOutOfRangeException(nameof(openGenericFrom), "Must be an Open Generic type, e.g. IList<>");
+
+            if (!openGenericTo.IsGenericType)
+                throw new ArgumentOutOfRangeException(nameof(openGenericTo), "Must be an Open Generic type, e.g. IList<>");
+
+            if (openGenericFrom == openGenericTo)
+                return true;
+
+            var interfaces = openGenericFrom.GetInterfaces();
+
+            foreach (var it in interfaces)
+            {
+                if (it.IsGenericType && it.GetGenericTypeDefinition() == openGenericTo)
+                    return true;
+            }
+            
+            var baseType = openGenericFrom.BaseType;
+
+            if (baseType == null)
+                return false;
+
+            return IsClosedGenericAssignableToOpenGenericType(baseType, openGenericTo);
         }
     }
 }

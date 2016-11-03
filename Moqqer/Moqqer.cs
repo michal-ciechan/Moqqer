@@ -11,6 +11,7 @@ namespace MoqqerNamespace
     public class Moqqer
     {
         internal static readonly MethodInfo ObjectGenericMethod;
+        internal static readonly MethodInfo QueryableAsQueryableMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
 
@@ -24,6 +25,10 @@ namespace MoqqerNamespace
             var moqType = typeof(Moqqer);
             
             ObjectGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstance));
+            
+            QueryableAsQueryableMethod = typeof(Queryable)
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .First(x => x.ContainsGenericParameters && x.Name == "AsQueryable");
         }
 
         public T Create<T>() where T : class
@@ -94,13 +99,13 @@ namespace MoqqerNamespace
 
         private object AddToObjects(Type type, object res)
         {
-            Objects.Add(type, res);
+            Objects[type] = res;
             return res;
         }
 
         private object Default(Type type)
         {
-            if (Objects.ContainsKey(type))
+            if(Objects.ContainsKey(type))
                 return Objects[type];
 
             if (type.IsGenericType)
@@ -114,16 +119,47 @@ namespace MoqqerNamespace
 
         private object DefaultGeneric(Type type)
         {
+            if (Objects.ContainsKey(type))
+                return Objects[type];
+
             var generic = type.GetGenericTypeDefinition();
 
-            if (generic == typeof(IList<>))
+            var genericArguments = type.GetGenericArguments();
+
+            if (typeof(List<>).IsOpenGenericAssignableToOpenGenericType(generic))
             {
-                var listType = typeof(List<>).MakeGenericType(type.GetGenericArguments());
-                var list = Object(listType);
+                var listType = typeof(List<>).MakeGenericType(genericArguments);
+
+                var list = GetOrCreateObject(listType);
+                
                 return AddToObjects(type, list);
+            }
+            if (generic == typeof(IQueryable<>))
+            {
+                var listType = typeof(List<>).MakeGenericType(genericArguments);
+
+                var list = GetOrCreateObject(listType);
+
+                var queryable = QueryableAsQueryableMethod.MakeGenericMethod(genericArguments).Invoke(null, new object[] { list });
+
+                return AddToObjects(type, queryable);
             }
 
             return null;
+        }
+
+        object GetOrCreateObject(Type type)
+        {
+            object res;
+
+            if (Objects.TryGetValue(type, out res))
+                return res;
+
+            res = Activator.CreateInstance(type);
+
+            Objects.Add(type, res);
+
+            return res;
         }
 
         public Mock<T> Of<T>() where T : class

@@ -100,5 +100,32 @@ namespace MoqqerNamespace.Tests.Helpers
             methods.Should().BeEquivalentTo(typeof(IBranch), typeof(ClassWithoutParameterlessCtor));
         }
 
+        [Test]
+        public void IsClosedGenericAssignableToOpenGenericType_List()
+        {
+            var closed = typeof(List<string>);
+            var open = typeof(List<>);
+            var openInterface = typeof(IList<>);
+            var openBaseInterface = typeof(IEnumerable<>);
+
+            closed.IsClosedGenericAssignableToOpenGenericType(open).Should().BeTrue();
+            closed.IsClosedGenericAssignableToOpenGenericType(openInterface).Should().BeTrue();
+            closed.IsClosedGenericAssignableToOpenGenericType(openBaseInterface).Should().BeTrue();
+        }
+        [Test]
+        public void IsOpenGenericAssignableToOpenGenericType_List()
+        {
+            var from = typeof(List<>);
+            var to = typeof(List<>);
+            var toInterface = typeof(IList<>);
+            var toBaseInterface = typeof(IEnumerable<>);
+
+            from.IsClosedGenericAssignableToOpenGenericType(to).Should().BeTrue();
+            from.IsClosedGenericAssignableToOpenGenericType(toInterface).Should().BeTrue();
+            from.IsClosedGenericAssignableToOpenGenericType(toBaseInterface).Should().BeTrue();
+
+            from.IsClosedGenericAssignableToOpenGenericType(typeof(Tuple<int>)).Should().BeFalse();
+        }
+
     }
 }

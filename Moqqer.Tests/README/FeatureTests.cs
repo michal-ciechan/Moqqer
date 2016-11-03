@@ -1,4 +1,8 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
+using FluentAssertions;
 using Moq;
 using MoqqerNamespace.Extensions;
 using MoqqerNamespace.Tests.TestClasses;
@@ -117,9 +121,38 @@ namespace MoqqerNamespace.Tests.README
             _moq.Use(25);
             _moq.Create<Fizz>().Divisor.Should().Be(25);
 
-            // Allow you to set a default value as well as reference types
+            // Allow you to set a default value for reference types
             _moq.Use("GitHub");
             _moq.Create<StringCtor>().Text.Should().Be("GitHub");
+        }
+
+        [Test]
+        public void DefaultListImplementation()
+        {
+            var res = _moq.Create<ClassWithListInCtor>();
+            
+            res.StringList.Should().NotBeNull()
+                .And.BeSameAs(_moq.Object<List<string>>());
+            res.StringCollection.Should().NotBeNull()
+                .And.BeSameAs(_moq.Object<List<string>>());
+            res.StringEnumerable.Should().NotBeNull()
+                .And.BeSameAs(_moq.Object<List<string>>());
+            res.StringListInterface.Should().NotBeNull()
+                .And.BeSameAs(_moq.Object<List<string>>());
+        }
+
+        [Test]
+        public void DefaultQueryableImplementation()
+        {
+            var list = _moq.Object<List<string>>();
+
+            list.Add("Test");
+            list.Add("SomeRandomString");
+
+            var res = _moq.Create<ClassWithQueryableInCtor>();
+
+            res.StringQueryable.ToList()
+                .Should().BeEquivalentTo(_moq.Object<List<string>>());
         }
     }
 }

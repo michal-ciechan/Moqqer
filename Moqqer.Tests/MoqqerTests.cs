@@ -61,7 +61,7 @@ namespace MoqqerNamespace.Tests
             res.Should().NotBeNull();
         }
 
-        [Test]
+        [Test, Ignore("Need an extension point in Moq library first")]
         public void MockOf_IInterfaceWithGenericMethod_CanSetup()
         {
             var res = _moq.Of<IInterfaceWithGenericMethod>();

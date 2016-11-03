@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using MoqqerNamespace.Tests.TestClasses;
@@ -60,6 +62,23 @@ namespace MoqqerNamespace.Tests.Moq
             var res = mock.Object.Call(25);
 
             res.Should().Be("25");
+        }
+
+        [Test]
+        public void Moq_GenericMethod_GetsMock()
+        {
+            var mock = new Mock<IInterfaceWithGenericMethod>();
+
+            //mock.Setup(q => q.Queryable<object>()).Returns(() =>
+            //{
+            //    var asQueryable = new HashSet<object>() {"Test"}.AsQueryable();
+            //    return asQueryable;
+            //});
+
+
+            var res = mock.Object.Queryable<StringCtor>();
+            
+            res.Should().NotBeNull();
         }
     }
 }
