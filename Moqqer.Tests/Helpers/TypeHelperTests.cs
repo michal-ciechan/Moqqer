@@ -20,6 +20,15 @@ namespace MoqqerNamespace.Tests.Helpers
 
             methods.Should().BeEquivalentTo();
         }
+        [Test]
+        public void GetMockableMethods_IInterfaceWithGenericMethod_ReturnsNoMethods()
+        {
+            var type = typeof(IInterfaceWithGenericMethod);
+
+            var methods = type.GetMockableMethods(x => false).Select(x => x.Name).ToList();
+
+            methods.Should().BeEmpty(" all methods of type IInterfaceWithGenericMethod are open Generic. Currently no supported way by Mock<T> to return a custo value.");
+        }
 
         /// <summary>
         /// Issue #3

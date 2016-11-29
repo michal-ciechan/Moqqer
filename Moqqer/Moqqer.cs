@@ -126,6 +126,10 @@ namespace MoqqerNamespace
 
             var genericArguments = type.GetGenericArguments();
 
+            // Cannot return Open Generic List
+            if (genericArguments.Any(x => x.IsGenericParameter))
+                return null;
+
             if (typeof(List<>).IsOpenGenericAssignableToOpenGenericType(generic))
             {
                 var listType = typeof(List<>).MakeGenericType(genericArguments);

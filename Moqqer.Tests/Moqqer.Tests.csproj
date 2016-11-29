@@ -66,6 +66,7 @@
     <Compile Include="TestClasses\ClassHavingParameterlessConcreteClass.cs" />
     <Compile Include="TestClasses\ClassWithDefaultMethods.cs" />
     <Compile Include="TestClasses\ClassWithListInCtor.cs" />
+    <Compile Include="TestClasses\ClassWithNestedListInterfaceMockableMember.cs" />
     <Compile Include="TestClasses\ClassWithNonVirtualInterfaceProperty.cs" />
     <Compile Include="TestClasses\ClassWithNonVirtualNullableProperty.cs" />
     <Compile Include="TestClasses\ClassWithNonVirtualProperty.cs" />

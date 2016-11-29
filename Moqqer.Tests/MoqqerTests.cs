@@ -159,6 +159,18 @@ namespace MoqqerNamespace.Tests
         }
 
         [Test]
+        public void SetupMockMethods_IInterfaceWithGenericMethod_ShouldReturnNull()
+        {
+            var mock = new Mock<IInterfaceWithGenericMethod>();
+
+            var type = typeof(IInterfaceWithGenericMethod);
+
+            _moq.SetupMockMethods(mock, type);
+
+            mock.Object.Query<string>().Should().BeEmpty();
+        }
+
+        [Test]
         public void Type_GetMethods_ReturnsAllPublic()
         {
             var type = typeof(SomeClass);
@@ -169,6 +181,15 @@ namespace MoqqerNamespace.Tests
             {
                 Console.WriteLine(methodInfo.Name);
             }
+        }
+
+        [Test]
+        public void Create_ClassWitIInterfaceWithGenericMethodParam_CanCreate()
+        {
+            var res = _moq.Create<ClassWitIInterfaceWithGenericMethodParam>();
+
+            res.Should().NotBeNull();
+            res.CtorParam.Should().NotBeNull();
         }
     }
 }
