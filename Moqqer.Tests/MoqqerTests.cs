@@ -164,6 +164,14 @@ namespace MoqqerNamespace.Tests
         }
 
         [Test]
+        public void Of_ClassWithNonVirtualMemeber_CanMock()
+        {
+            var res = _moq.Of<ClassWithNonVirtualMemeber>();
+
+            res.Should().NotBeNull();
+        }
+
+        [Test]
         public void SetupMockMethods_IInterfaceWithGenericMethod_ShouldReturnNull()
         {
             var mock = new Mock<IInterfaceWithGenericMethod>();
@@ -198,4 +206,6 @@ namespace MoqqerNamespace.Tests
                 Console.WriteLine(methodInfo.Name);
         }
     }
+
+
 }

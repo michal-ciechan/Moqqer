@@ -54,6 +54,13 @@ namespace MoqqerNamespace.Helpers
             return type.IsInterface || type.IsAbstract;
         }
 
+        internal static bool IsMockable(this MethodInfo method)
+        {
+            return method.IsVirtual ||
+                   method.IsAbstract ||
+                   method.IsVirtual;
+        }
+
         public static MethodInfo GetGenericMethod(this Type type, string methodName)
         {
             if (type == null)

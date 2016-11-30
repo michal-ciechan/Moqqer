@@ -276,10 +276,14 @@ namespace MoqqerNamespace
             {
                 if(method.IsGenericMethod)
                     continue;
+                
+                if(!method.IsMockable())
+                    continue;
 
                 var parameters = method.GetParameters();
-                Expression[] args =
-                    parameters.Select(x => (Expression)Expression.Call(isAnyMethod.MakeGenericMethod(x.ParameterType))).ToArray();
+                var args =
+                    parameters.Select(x => (Expression) Expression.Call(isAnyMethod.MakeGenericMethod(x.ParameterType)))
+                        .ToArray();
 
                 var reflectedExpression = Expression.Call(inputParameter, method, args);
 
