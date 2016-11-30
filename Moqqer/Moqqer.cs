@@ -256,6 +256,11 @@ namespace MoqqerNamespace
             return mock;
         }
 
+        public List<T> List<T>()
+        {
+            return DefaultGeneric(typeof(List<T>)) as List<T>;
+        }
+
         internal void SetupMockMethods(Mock mock, Type type)
         {
             var methods = type.GetMockableMethods(HasObjectOrDefault).ToList();

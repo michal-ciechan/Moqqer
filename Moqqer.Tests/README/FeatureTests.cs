@@ -127,18 +127,21 @@ namespace MoqqerNamespace.Tests.README
         }
 
         [Test]
-        public void DefaultListImplementation()
+        public void DefaultQuryableImplementation()
         {
-            var res = _moq.Create<ClassWithListInCtor>();
-            
-            res.StringList.Should().NotBeNull()
-                .And.BeSameAs(_moq.Object<List<string>>());
-            res.StringCollection.Should().NotBeNull()
-                .And.BeSameAs(_moq.Object<List<string>>());
-            res.StringEnumerable.Should().NotBeNull()
-                .And.BeSameAs(_moq.Object<List<string>>());
-            res.StringListInterface.Should().NotBeNull()
-                .And.BeSameAs(_moq.Object<List<string>>());
+            var item = new Leaf(25);
+
+            _moq.List<Leaf>()
+                .Add(item);
+
+            // Contains `IQueryable Leaves { get; set; }`
+            var ctx = _moq.Of<IContext>().Object;
+
+            ctx.Leaves.Should().HaveCount(1);
+            ctx.Leaves.First().Should().BeSameAs(item);
+            ctx.Leaves.Should().BeEquivalentTo(_moq.List<Leaf>());
+            ctx.Leaves.Where(x => x.Age == 25)
+                .Should().HaveCount(1);
         }
 
         [Test]

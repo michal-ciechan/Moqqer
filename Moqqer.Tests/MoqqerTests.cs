@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using Moq;
@@ -204,6 +205,22 @@ namespace MoqqerNamespace.Tests
 
             foreach (var methodInfo in res)
                 Console.WriteLine(methodInfo.Name);
+        }
+        [Test]
+        public void Create_DefaultListImplementations()
+        {
+            var res = _moq.Create<ClassWithListInCtor>();
+
+            res.StringList.Should().NotBeNull()
+                .And.BeSameAs(_moq.Object<List<string>>());
+            res.StringCollection.Should().NotBeNull()
+                .And.BeSameAs(_moq.Object<List<string>>());
+            res.StringEnumerable.Should().NotBeNull()
+                .And.BeSameAs(_moq.Object<List<string>>());
+            res.StringListInterface.Should().NotBeNull()
+                .And.BeSameAs(_moq.Object<List<string>>());
+            res.StringQueryable.Should().NotBeNull()
+                .And.BeEquivalentTo(_moq.Object<List<string>>());
         }
     }
 

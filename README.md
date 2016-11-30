@@ -147,6 +147,25 @@ public void DefaultObjectInjection()
 }
 ```
 
+## Default IQueryable<T> Implementation
+
+By default Moqqer will inject Mocks into types which are _Mockable_. For types which aren't Mockable, Moqqer will resolve those to the type or object as per the [Non Mockable Defaults](#non-mockable-defaults) below.
+
+```csharp
+var item = new Leaf(25);
+
+_moq.List<Leaf>()
+		.Add(item);
+
+// Contains `IQueryable Leaves { get; set; }`
+var ctx = _moq.Of<IContext>().Object;
+
+ctx.Leaves.Should().HaveCount(1);
+ctx.Leaves.First().Should().BeSameAs(item);
+ctx.Leaves.Should().BeSameAs(_moq.List<Leaf>());
+ctx.Leaves.Where(x => x.Age == 25)
+		.Should().HaveCount(1);
+```
 ## Recursive Mocking
 
 As Moqqer creates a Mock, it goes through it's members and sets all overridable to return `Mock<T>.Object`'s
@@ -225,8 +244,9 @@ _moq.Create<StringCtor>().Text.Should().Be("GitHub");
 |Type  |  Defaulted To
 |---|---
 |`string`  |  `string.Empty`
-|`List<T>` |  `new List<T>()`
-|`IList<T>` |  `new List<T>()`
+|`List<T>` |  `moq.List<T>()`
+|`IList<T>` |  `moq.List<T>()`
+|`IQueryable<T>` |  `moq.List<T>()`
 |Mockable Object | `Mock<T>`
 
 # Installing
