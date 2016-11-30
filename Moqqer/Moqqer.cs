@@ -274,6 +274,9 @@ namespace MoqqerNamespace
 
             foreach (var method in methods)
             {
+                if(method.IsGenericMethod)
+                    continue;
+
                 var parameters = method.GetParameters();
                 Expression[] args =
                     parameters.Select(x => (Expression)Expression.Call(isAnyMethod.MakeGenericMethod(x.ParameterType))).ToArray();

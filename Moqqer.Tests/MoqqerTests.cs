@@ -11,14 +11,13 @@ namespace MoqqerNamespace.Tests
     [TestFixture]
     public class MoqqerTests
     {
-        private Moqqer _moq;
-
         [SetUp]
         public void A_Setup()
         {
             _moq = new Moqqer();
-
         }
+
+        private Moqqer _moq;
 
         [Test]
         public void CallA_CallsDependencyA()
@@ -28,6 +27,64 @@ namespace MoqqerNamespace.Tests
             subject.CallA();
 
             _moq.Of<IDepencyA>().Verify(x => x.Call(), Times.Once);
+        }
+
+        /// <summary>
+        ///     Issue #1
+        /// </summary>
+        [Test]
+        public void Create_ClassWith2Ctors1ContainingClassWithoutParameterlessCtor_ShouldReturnObject()
+        {
+            var res = _moq.Create<ClassWith2Ctors1ContainingClassWithoutParameterlessCtor>();
+
+            res.Should().NotBeNull();
+            res.InterfaceParam.Should().NotBeNull();
+            res.ParameterlessCtorParam.Should().BeNull();
+        }
+
+        /// <summary>
+        ///     Issue #1
+        /// </summary>
+        [Test]
+        public void Create_ClassWith2Ctors1ContainingString_ShouldReturn()
+        {
+            var res = _moq.Create<ClassWith2Ctors1ContainingString>();
+
+            res.InterfaceParam.Should().NotBeNull();
+            res.String.Should().BeSameAs(string.Empty);
+        }
+
+        /// <summary>
+        ///     Issue #2 - GetInstance should return Default if exists.
+        /// </summary>
+        [Test]
+        public void Create_ClassWithDefaultMethods_IListIsDefaultObjectsList()
+        {
+            var res = _moq.Create<ClassWithDefaultMethods>();
+
+            res.DefaultMethods.ListInterface()
+                .Should().BeSameAs(_moq.Object<List<string>>());
+        }
+
+        /// <summary>
+        ///     Issue #2
+        /// </summary>
+        [Test]
+        public void Create_ClassWithDefaultMethods_ListIsDefaultObjectsList()
+        {
+            var res = _moq.Create<ClassWithDefaultMethods>();
+
+            res.DefaultMethods.List()
+                .Should().BeSameAs(_moq.Object<List<string>>());
+        }
+
+        [Test]
+        public void Create_ClassWitIInterfaceWithGenericMethodParam_CanCreate()
+        {
+            var res = _moq.Create<ClassWitIInterfaceWithGenericMethodParam>();
+
+            res.Should().NotBeNull();
+            res.CtorParam.Should().NotBeNull();
         }
 
         [Test]
@@ -61,7 +118,8 @@ namespace MoqqerNamespace.Tests
             res.Should().NotBeNull();
         }
 
-        [Test, Ignore("Need an extension point in Moq library first")]
+        [Test]
+        [Ignore("Need an extension point in Moq library first")]
         public void MockOf_IInterfaceWithGenericMethod_CanSetup()
         {
             var res = _moq.Of<IInterfaceWithGenericMethod>();
@@ -97,65 +155,12 @@ namespace MoqqerNamespace.Tests
             Assert.That(action, Throws.TypeOf<MoqqerException>());
         }
 
-        /// <summary>
-        /// Issue #1
-        /// </summary>
         [Test]
-        public void Create_ClassWith2Ctors1ContainingClassWithoutParameterlessCtor_ShouldReturnObject()
+        public void Of_IOpenGenericMethodsWithClosedGenericListReturnTypes_CanMock()
         {
-            var res = _moq.Create<ClassWith2Ctors1ContainingClassWithoutParameterlessCtor>();
+            var res = _moq.Of<IOpenGenericMethodsWithClosedGenericListReturnTypes>();
 
             res.Should().NotBeNull();
-            res.InterfaceParam.Should().NotBeNull();
-            res.ParameterlessCtorParam.Should().BeNull();
-        }
-
-        /// <summary>
-        /// Issue #1
-        /// </summary>
-        [Test]
-        public void Create_ClassWith2Ctors1ContainingString_ShouldReturn()
-        {
-            var res = _moq.Create<ClassWith2Ctors1ContainingString>();
-
-            res.InterfaceParam.Should().NotBeNull();
-            res.String.Should().BeSameAs(string.Empty);
-        }
-        
-        /// <summary>
-        /// Issue #2
-        /// </summary>
-        [Test]
-        public void Create_ClassWithDefaultMethods_ListIsDefaultObjectsList()
-        {
-            var res = _moq.Create<ClassWithDefaultMethods>();
-
-            res.DefaultMethods.List()
-                .Should().BeSameAs(_moq.Object<List<string>>());
-        }
-
-        /// <summary>
-        /// Issue #2 - GetInstance should return Default if exists.
-        /// </summary>
-        [Test]
-        public void Create_ClassWithDefaultMethods_IListIsDefaultObjectsList()
-        {
-            var res = _moq.Create<ClassWithDefaultMethods>();
-
-            res.DefaultMethods.ListInterface()
-                .Should().BeSameAs(_moq.Object<List<string>>());
-        }
-
-        [Test]
-        public void SetupMockMethods_SomeClassGetA_ShouldNotBeNull()
-        {
-            var mock = new Mock<IMockSetup>();
-
-            var type = typeof(IMockSetup);
-
-            _moq.SetupMockMethods(mock, type);
-
-            mock.Object.GetA().Should().NotBeNull();
         }
 
         [Test]
@@ -171,6 +176,18 @@ namespace MoqqerNamespace.Tests
         }
 
         [Test]
+        public void SetupMockMethods_SomeClassGetA_ShouldNotBeNull()
+        {
+            var mock = new Mock<IMockSetup>();
+
+            var type = typeof(IMockSetup);
+
+            _moq.SetupMockMethods(mock, type);
+
+            mock.Object.GetA().Should().NotBeNull();
+        }
+
+        [Test]
         public void Type_GetMethods_ReturnsAllPublic()
         {
             var type = typeof(SomeClass);
@@ -178,18 +195,7 @@ namespace MoqqerNamespace.Tests
             var res = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
             foreach (var methodInfo in res)
-            {
                 Console.WriteLine(methodInfo.Name);
-            }
-        }
-
-        [Test]
-        public void Create_ClassWitIInterfaceWithGenericMethodParam_CanCreate()
-        {
-            var res = _moq.Create<ClassWitIInterfaceWithGenericMethodParam>();
-
-            res.Should().NotBeNull();
-            res.CtorParam.Should().NotBeNull();
         }
     }
 }
