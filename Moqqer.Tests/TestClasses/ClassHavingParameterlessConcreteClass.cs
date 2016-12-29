@@ -2,11 +2,11 @@
 {
     public class ClassHavingParameterlessConcreteClass
     {
-        public ClassHavingParameterlessConcreteClass(ParameterlessClass @class)
+        public ClassHavingParameterlessConcreteClass(ClassWithParameterlessCtor ctor)
         {
-            Class = @class;
+            Ctor = ctor;
         }
 
-        public ParameterlessClass Class { get; set; }
+        public ClassWithParameterlessCtor Ctor { get; set; }
     }
 }

@@ -2,11 +2,11 @@ namespace MoqqerNamespace.Tests.TestClasses
 {
     public class ClassWithCtorContainingClassWithoutParameterlessCtor
     {
-        public ClassWithCtorContainingClassWithoutParameterlessCtor(ParameterlessClass ctorParam)
+        public ClassWithCtorContainingClassWithoutParameterlessCtor(ClassWithParameterlessCtor ctorParam)
         {
             CtorParam = ctorParam;
         }
 
-        public ParameterlessClass CtorParam { get; set; }
+        public ClassWithParameterlessCtor CtorParam { get; set; }
     }
 }

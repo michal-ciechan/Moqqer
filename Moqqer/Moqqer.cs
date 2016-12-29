@@ -10,7 +10,8 @@ namespace MoqqerNamespace
 {
     public class Moqqer
     {
-        internal static readonly MethodInfo ObjectGenericMethod;
+        internal static readonly MethodInfo GetInstanceGenericMethod;
+        internal static readonly MethodInfo GetInstanceFuncGenericMethod;
         internal static readonly MethodInfo QueryableAsQueryableMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
@@ -24,11 +25,13 @@ namespace MoqqerNamespace
         {
             var moqType = typeof(Moqqer);
             
-            ObjectGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstance));
+            GetInstanceGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstance));
             
             QueryableAsQueryableMethod = typeof(Queryable)
                 .GetMethods(BindingFlags.Public | BindingFlags.Static)
                 .First(x => x.ContainsGenericParameters && x.Name == "AsQueryable");
+
+            GetInstanceFuncGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstanceFunc));
         }
 
         public T Create<T>() where T : class
@@ -144,7 +147,7 @@ namespace MoqqerNamespace
 
                 var list = GetOrCreateObject(listType);
 
-                var queryable = QueryableAsQueryableMethod.MakeGenericMethod(genericArguments).Invoke(null, new object[] { list });
+                var queryable = QueryableAsQueryableMethod.MakeGenericMethod(genericArguments).Invoke(null, new[] { list });
 
                 return AddToObjects(type, queryable);
             }
@@ -212,6 +215,30 @@ namespace MoqqerNamespace
             return (T) GetInstance(typeof(T));
         }
 
+        private object GetInstanceFunc(Type type)
+        {
+            if(!type.IsGenericType)
+                throw new Exception("Cannot get an instnace of a Func<T> because paramter 'type' is ot of Func<T>");
+
+            var genericArgs = type.GetGenericArguments();
+
+            if(genericArgs.Length > 1)
+                throw new Exception("type has too many generic arguments! Can only provide closed Func<T> as type param");
+
+            var returnType = genericArgs[0];
+
+            var getFuncMethod = GetInstanceFuncGenericMethod.MakeGenericMethod(returnType);
+
+            return getFuncMethod.Invoke(this, null);
+        }
+
+        private object GetInstanceFunc<T>()
+        {
+            Func<T> func = GetInstance<T>;
+
+            return func;
+        }
+
         internal object GetInstance(Type type)
         {
             var def = Default(type);
@@ -225,6 +252,9 @@ namespace MoqqerNamespace
 
         internal object GetParameter(Type type)
         {
+            if (type.IsFunc())
+                return GetInstanceFunc(type);
+
             return GetInstance(type);
         }
 
@@ -302,7 +332,7 @@ namespace MoqqerNamespace
                 var funcType = typeof(Func<>).MakeGenericType(method.ReturnType);
 
                 var delgate = Delegate.CreateDelegate(funcType, this,
-                    ObjectGenericMethod.MakeGenericMethod(method.ReturnType));
+                    GetInstanceGenericMethod.MakeGenericMethod(method.ReturnType));
 
                 var setupType = setup.GetType();
 

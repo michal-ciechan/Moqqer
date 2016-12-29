@@ -36,9 +36,9 @@ namespace MoqqerNamespace.Helpers
 
             var potentialCtors = ctors
                 .Where(c => c.GetParameters()
-                    .All(p => p.ParameterType.IsMockable()
-                              || p.ParameterType.HasDefaultCtor()
-                              || canInject(p.ParameterType)))
+                    .Select(p => p.ParameterType)
+                    .All(p => p.IsInjectable(canInject) ||
+                              p.IsInjectableFunc(canInject)))
                 .ToList();
 
             if (potentialCtors.Count == 0)
@@ -46,6 +46,31 @@ namespace MoqqerNamespace.Helpers
 
             return potentialCtors.OrderByDescending(x => x.GetParameters().Length).First();
 
+        }
+
+        internal static bool IsFunc(this Type type)
+        {
+            if (!type.IsGenericType)
+                return false;
+
+            return type.GetGenericTypeDefinition() == typeof(Func<>);
+        }
+
+        internal static bool IsInjectableFunc(this Type type, Predicate<Type> canInject)
+        {
+            if (!type.IsFunc())
+                return false;
+
+            var returnType = type.GetGenericArguments().First();
+
+            return returnType.IsInjectable(canInject);
+        }
+
+        internal static bool IsInjectable(this Type type, Predicate<Type> canInject)
+        {
+            return type.IsMockable()
+                   || type.HasDefaultCtor()
+                   || canInject(type);
         }
 
 

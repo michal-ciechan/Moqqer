@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -76,8 +78,8 @@ namespace MoqqerNamespace.Tests.README
         {
             var subject = _moq.Create<ClassHavingParameterlessConcreteClass>();
 
-            var classObject = subject.Class;
-            var moqedObject = _moq.Object<ParameterlessClass>();
+            var classObject = subject.Ctor;
+            var moqedObject = _moq.Object<ClassWithParameterlessCtor>();
 
             classObject.Should().BeSameAs(moqedObject);
         }
@@ -156,6 +158,19 @@ namespace MoqqerNamespace.Tests.README
 
             res.StringQueryable.ToList()
                 .Should().BeEquivalentTo(_moq.Object<List<string>>());
+        }
+
+        [Test]
+        [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
+        public void FuncResolution()
+        {
+            var factory = _moq.Create<LeafFactory>();
+
+            Func<ILeaf> func = factory.CreateLeaf;
+
+            var leaf = func();
+
+            leaf.Should().BeSameAs(_moq.Of<ILeaf>().Object);
         }
     }
 }

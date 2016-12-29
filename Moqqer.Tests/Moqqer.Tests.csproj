@@ -65,6 +65,8 @@
     <Compile Include="TestClasses\ClassWithCtorContainingClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassHavingParameterlessConcreteClass.cs" />
     <Compile Include="TestClasses\ClassWithDefaultMethods.cs" />
+    <Compile Include="TestClasses\ClassWithFuncInCtor.cs" />
+    <Compile Include="TestClasses\ClassWithFuncInCtorWhichReturnsConcreteType.cs" />
     <Compile Include="TestClasses\ClassWithListInCtor.cs" />
     <Compile Include="TestClasses\ClassWithNestedListInterfaceMockableMember.cs" />
     <Compile Include="TestClasses\ClassWithNonVirtualInterfaceProperty.cs" />
@@ -85,7 +87,7 @@
     <Compile Include="TestClasses\IRoot.cs" />
     <Compile Include="TestClasses\ITree.cs" />
     <Compile Include="TestClasses\Leaf.cs" />
-    <Compile Include="TestClasses\ParameterlessClass.cs" />
+    <Compile Include="TestClasses\ClassWithParameterlessCtor.cs" />
     <Compile Include="TestClasses\IMockSetup.cs" />
     <Compile Include="TestClasses\IInterfaceWithGenericMethod.cs" />
     <Compile Include="TestClasses\IParameterisedMethodClass.cs" />

@@ -1,6 +1,6 @@
 ﻿namespace MoqqerNamespace.Tests.TestClasses
 {
-    public class ParameterlessClass
+    public class ClassWithParameterlessCtor
     {
     }
 }

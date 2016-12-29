@@ -249,6 +249,12 @@ _moq.Create<StringCtor>().Text.Should().Be("GitHub");
 |`IQueryable<T>` |  `moq.List<T>()`
 |Mockable Object | `Mock<T>`
 
+# Func<T> Resolution
+
+Moqqer by default will resolve any `Func<T>` to `Func<Mock<T>>` if `T` is Mockable, otherwise to try resolve to `Func<_moq.Object<T>>`
+
+
+
 # Installing
 
 Find it on NuGet under MoqInjectionContainer
