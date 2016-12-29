@@ -165,6 +165,23 @@ namespace MoqqerNamespace.Tests
         }
 
         [Test]
+        public void Of_IOpenGenericInterfaceWithTListReturnTypes_ListPropertiesReturnDefaultLists()
+        {
+            _moq.List<Leaf>().Add(new Leaf());
+
+            var res = _moq.Of<IOpenGenericInterfaceWithTListReturnTypes<Leaf>>().Object;
+
+            res.Should().NotBeNull();
+
+            res.GetList().Should().BeSameAs(_moq.List<Leaf>());
+            res.GetIList().Should().BeSameAs(_moq.List<Leaf>());
+            res.GetEnumerable().Should().BeSameAs(_moq.List<Leaf>());
+
+            // IQueryable should be equivalent as List.AsQueryable() gets returned which is a wrapper
+            res.GetIQueryable().Should().BeEquivalentTo(_moq.List<Leaf>());
+        }
+
+        [Test]
         public void Of_ClassWithNonVirtualMemeber_CanMock()
         {
             var res = _moq.Of<ClassWithNonVirtualMemeber>();
