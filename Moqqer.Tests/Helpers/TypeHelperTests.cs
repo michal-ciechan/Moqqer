@@ -20,6 +20,7 @@ namespace MoqqerNamespace.Tests.Helpers
 
             methods.Should().BeEquivalentTo();
         }
+
         [Test]
         public void GetMockableMethods_IInterfaceWithGenericMethod_ReturnsNoMethods()
         {
@@ -28,6 +29,16 @@ namespace MoqqerNamespace.Tests.Helpers
             var methods = type.GetMockableMethods(x => false).Select(x => x.Name).ToList();
 
             methods.Should().BeEmpty(" all methods of type IInterfaceWithGenericMethod are open Generic. Currently no supported way by Mock<T> to return a custo value.");
+        }
+
+        [Test]
+        public void GetMockableMethods_ISuperInterface_ReturnsBaseInterfaceStringMethod()
+        {
+            var type = typeof(ISuperInterface);
+
+            var methods = type.GetMockableMethods(x => x == typeof(string)).Select(x => x.Name).ToList();
+
+            methods.Should().Contain("SubString");
         }
 
         /// <summary>

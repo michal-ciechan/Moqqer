@@ -7,6 +7,17 @@ namespace MoqqerNamespace.Helpers
 {
     internal static class TypeExtensions
     {
+
+        public static IEnumerable<Type> FlattenInheritance(this Type type)
+        {
+            yield return type;
+
+            foreach (var subType in type.GetInterfaces().SelectMany(x => x.FlattenInheritance()).Distinct())
+            {
+                yield return subType;
+            }
+        }
+
         public static ConstructorInfo GetDefaultCtor(this Type type)
         {
             return type.GetConstructor(
@@ -21,7 +32,8 @@ namespace MoqqerNamespace.Helpers
         public static IEnumerable<MethodInfo> GetMockableMethods(this Type type, Predicate<Type> canInject)
         {
             return type
-                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .FlattenInheritance()
+                .SelectMany(x => x.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |  BindingFlags.FlattenHierarchy))
                 .Where(
                     x => canInject(x.ReturnType) || (
                     x.ReturnType.IsInterface 

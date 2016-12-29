@@ -86,6 +86,8 @@
     <Compile Include="TestClasses\IOpenGenericInterfaceWithTListReturnTypes.cs" />
     <Compile Include="TestClasses\IOpenGenericMethodsWithClosedGenericListReturnTypes.cs" />
     <Compile Include="TestClasses\IRoot.cs" />
+    <Compile Include="TestClasses\ISubInterface.cs" />
+    <Compile Include="TestClasses\ISuperInterface.cs" />
     <Compile Include="TestClasses\ITree.cs" />
     <Compile Include="TestClasses\Leaf.cs" />
     <Compile Include="TestClasses\ClassWithParameterlessCtor.cs" />
