@@ -9,31 +9,28 @@ namespace MoqqerNamespace.MoqqerQueryable
     {
         public static Expression RewriteLinqCall(Expression expression)
         {
-            if(ProcessMemberCallExpression(ref expression))
-                return expression;
+            ProcessMemberCallExpression(ref expression);
 
             return expression;
         }
 
-        private static bool ProcessMemberCallExpression(ref Expression expression)
+        private static void ProcessMemberCallExpression(ref Expression expression)
         {
             var meth = expression as MethodCallExpression;
 
-            if (meth?.Arguments.Count != 2) return false;
+            if (meth?.Arguments.Count != 2) return;
 
             var arg = meth.Arguments[1] as UnaryExpression;
 
             var operand = arg?.Operand as LambdaExpression;
 
-            if (operand == null) return false;
+            if (operand == null) return;
 
             var newOperand = RewriteLambdaExpression(operand);
 
             var newMeth = Expression.Call(meth.Method, meth.Arguments[0], newOperand);
 
             expression = newMeth;
-
-            return true;
         }
 
         public static Expression RewriteLambdaExpression(LambdaExpression original)
@@ -94,6 +91,7 @@ namespace MoqqerNamespace.MoqqerQueryable
                 case ExpressionType.Multiply:
                 case ExpressionType.MultiplyChecked:
                 case ExpressionType.Divide:
+                case ExpressionType.Modulo:
                     return RewriteMethodBinaryExpression(body as BinaryExpression);
 
                 // Static
@@ -123,8 +121,6 @@ namespace MoqqerNamespace.MoqqerQueryable
                 case ExpressionType.ListInit:
                     break;
                 case ExpressionType.MemberInit:
-                    break;
-                case ExpressionType.Modulo:
                     break;
                 case ExpressionType.Negate:
                     break;

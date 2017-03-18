@@ -143,7 +143,7 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
-        [TestCase(nameof(AllLevels), 100 + 100)]
+        [TestCase(nameof(AllLevels), 200)]
         [TestCase(nameof(SingleLevel), null)]
         public void EnumerableMoqqerQuery_Select_ExpressionType_Add_Integer_Plus_Decimal
             (string key, decimal? expected)
@@ -158,7 +158,7 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
-        [TestCase(nameof(AllLevels), 5, 5, 5 + 5)]
+        [TestCase(nameof(AllLevels), 5, 5, 10)]
         [TestCase(nameof(AllLevels), null, null, null)]
         [TestCase(nameof(AllLevels), null, 5, null)]
         [TestCase(nameof(SingleLevel), null, null, null)]
@@ -183,7 +183,7 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
-        [TestCase(nameof(AllLevels), 100 - 100)]
+        [TestCase(nameof(AllLevels), 0)]
         [TestCase(nameof(SingleLevel), null)]
         public void EnumerableMoqqerQuery_Select_ExpressionType_Subtract_Integer_Plus_Decimal
             (string key, decimal? expected)
@@ -198,7 +198,7 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
-        [TestCase(nameof(AllLevels), 10, 5, 10 - 5)]
+        [TestCase(nameof(AllLevels), 10, 7, 3)]
         [TestCase(nameof(AllLevels), null, null, null)]
         [TestCase(nameof(AllLevels), null, 5, null)]
         [TestCase(nameof(SingleLevel), null, null, null)]
@@ -238,7 +238,7 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
-        [TestCase(nameof(AllLevels), 100 * 100)]
+        [TestCase(nameof(AllLevels), 10000)]
         [TestCase(nameof(SingleLevel), null)]
         public void EnumerableMoqqerQuery_Select_ExpressionType_Multiply_Integer_Plus_Decimal
             (string key, decimal? expected)
@@ -253,7 +253,7 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
-        [TestCase(nameof(AllLevels), 5, 5, 5 * 5)]
+        [TestCase(nameof(AllLevels), 5, 5, 25)]
         [TestCase(nameof(AllLevels), null, null, null)]
         [TestCase(nameof(AllLevels), null, 5, null)]
         [TestCase(nameof(SingleLevel), null, null, null)]
@@ -278,7 +278,7 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
-        [TestCase(nameof(AllLevels), 100 / 100)]
+        [TestCase(nameof(AllLevels), 1)]
         [TestCase(nameof(SingleLevel), null)]
         public void EnumerableMoqqerQuery_Select_ExpressionType_Divide_Integer_Plus_Decimal
             (string key, decimal? expected)
@@ -293,7 +293,7 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
-        [TestCase(nameof(AllLevels), 5, 5, 5 / 5)]
+        [TestCase(nameof(AllLevels), 5, 5, 1)]
         [TestCase(nameof(AllLevels), null, null, null)]
         [TestCase(nameof(AllLevels), null, 5, null)]
         [TestCase(nameof(SingleLevel), null, null, null)]
@@ -311,6 +311,46 @@ namespace MoqqerNamespace.Tests.Helpers
                 : GetQueryable(key);
 
             var q = queryable.Select(x => x.L1.L2.L3.L4.L5.NullableInteger / x.L1.L2.L3.L4.L5.NullableDecimal);
+
+            var res = q.FirstOrDefault();
+
+            res.Should().Be(expected);
+        }
+
+        [Test]
+        [TestCase(nameof(AllLevels), 0)]
+        [TestCase(nameof(SingleLevel), null)]
+        public void EnumerableMoqqerQuery_Select_ExpressionType_Module_Integer_And_Decimal
+            (string key, decimal? expected)
+        {
+            var queryable = GetQueryable(key);
+
+            var q = queryable.Select(x => (int?) x.L1.L2.L3.L4.L5.Integer100 % x.L1.L2.L3.L4.L5.Decimal100);
+
+            var res = q.FirstOrDefault();
+
+            res.Should().Be(expected);
+        }
+
+        [Test]
+        [TestCase(nameof(AllLevels), 5, 3, 2)]
+        [TestCase(nameof(AllLevels), null, null, null)]
+        [TestCase(nameof(AllLevels), null, 5, null)]
+        [TestCase(nameof(SingleLevel), null, null, null)]
+        [TestCase(nameof(SingleLevel), null, 5, null)]
+        [TestCase(nameof(SingleLevel), 5, 5, null)]
+        public void EnumerableMoqqerQuery_Select_ExpressionType_Modulo_NullableInteger_And_NullableDecimal
+            (string key, int? integer, decimal? dec, decimal? expected)
+        {
+            var queryable = integer != null || dec != null
+                ? GetQueryable(key, x =>
+                {
+                    x.L1.L2.L3.L4.L5.NullableInteger = integer;
+                    x.L1.L2.L3.L4.L5.NullableDecimal = dec;
+                })
+                : GetQueryable(key);
+
+            var q = queryable.Select(x => x.L1.L2.L3.L4.L5.NullableInteger % x.L1.L2.L3.L4.L5.NullableDecimal);
 
             var res = q.FirstOrDefault();
 
