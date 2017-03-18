@@ -160,6 +160,37 @@ namespace MoqqerNamespace.Tests.README
                 .Should().BeEquivalentTo(_moq.Object<List<string>>());
         }
 
+
+        [Test]
+        public void DefaultQueryableImplementation_ExpressionNullGuarding()
+        {
+            _moq.Add(new Parent());
+
+            var ctx = _moq.Of<IContext>().Object; // Get a mocked context
+
+            ctx.Parents.Select(x => x.Name) // Standard accessor
+                .Single().Should().Be(null);
+
+            ctx.Parents.Select(x => (int?) x.Child.Age) // Linq2Objects can throw NullReferenceException
+                .Single().Should().Be(null);
+        }
+
+        [Test]
+        [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
+        public void DefaultQueryableImplementation_ExpressionNullGuarding_TurnOff()
+        {
+            _moq.UseMoqqerEnumerableQuery = false;
+
+            _moq.Add(new Parent());
+
+            var ctx = _moq.Of<IContext>().Object; // Get a mocked context
+            
+            Action act = () => ctx.Parents.Select(x => (int?)x.Child.Age).Single();
+
+            act.ShouldThrow<NullReferenceException>("x.Child is null");
+        }
+
+
         [Test]
         [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
         public void FuncResolution()
@@ -171,6 +202,24 @@ namespace MoqqerNamespace.Tests.README
             var leaf = func();
 
             leaf.Should().BeSameAs(_moq.Of<ILeaf>().Object);
+        }
+
+        [Test]
+        [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
+        public void List()
+        {
+            var item = new Leaf(25);
+
+            // Get instance of List<T>
+            _moq.List<Leaf>()
+                .Add(item);
+
+            // Extension method to add T item to List<T>
+            _moq.Add(item);
+
+            // Confirm List has 2 Items
+            _moq.Of<IContext>()
+                .Object.Leaves.Should().HaveCount(2);
         }
     }
 }

@@ -54,11 +54,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\MoqFluentVerifyBuilder.cs" />
     <Compile Include="Extensions\MoqqerExtensions.cs" />
     <Compile Include="IMoqqerObjectContext.cs" />
     <Compile Include="MoqFactory.cs" />
     <Compile Include="Moqqer.cs" />
     <Compile Include="MoqqerException.cs" />
+    <Compile Include="MoqqerQueryable\EnumerableExecutor.cs" />
+    <Compile Include="MoqqerQueryable\EnumerableMoqqerQuery.cs" />
+    <Compile Include="MoqqerQueryable\EnumerableMoqqerQueryExtensions.cs" />
+    <Compile Include="MoqqerQueryable\EnumerableRewriter.cs" />
+    <Compile Include="MoqqerQueryable\MoqqerExpressionRewriter.cs" />
+    <Compile Include="MoqqerQueryable\OldExpressionVisitor.cs" />
+    <Compile Include="MoqqerQueryable\ReadOnlyCollectionExtensions.cs" />
+    <Compile Include="MoqqerQueryable\TypeHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\TypeExtensions.cs" />
   </ItemGroup>

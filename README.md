@@ -151,13 +151,15 @@ public void DefaultObjectInjection()
 
 By default Moqqer will inject Mocks into types which are _Mockable_. For types which aren't Mockable, Moqqer will resolve those to the type or object as per the [Non Mockable Defaults](#non-mockable-defaults) below.
 
+e.g. This helps with testing Entity Framework repository/expression logic allowing you to use `Lists` as if they were the backing Tables.
+
 ```csharp
 var item = new Leaf(25);
 
 _moq.List<Leaf>()
-		.Add(item);
+    .Add(item);
 
-// Contains `IQueryable Leaves { get; set; }`
+// Contains `IQueryable<Leaf> Leaves { get; set; }`
 var ctx = _moq.Of<IContext>().Object;
 
 ctx.Leaves.Should().HaveCount(1);
@@ -166,6 +168,34 @@ ctx.Leaves.Should().BeSameAs(_moq.List<Leaf>());
 ctx.Leaves.Where(x => x.Age == 25)
 		.Should().HaveCount(1);
 ```
+
+### Expression Null Guarding
+
+By default, when using expressions to query child objects, you do not have to null guard when using something like EF/Linq2Sql as SQL Server will gracefully handle these and set property to null. Where as in Linq2Objects (`SomeList.AsQueryable()`) this will cause a `NullReferenceException`.
+
+To overcome this, by default Moqqer will provide a custom `IQueryable` where it modifies expressions that contain reference type accessors and to gracefully handle null reference types.
+
+Example:
+
+```csharp
+_moq.Add(new Parent());
+
+var ctx = _moq.Of<IContext>().Object; // Get a mocked context
+
+ctx.Parents.Select(x => x.Name) // Standard accessor
+    .Single().Should().Be(null);
+
+ctx.Parents.Select(x => (int?) x.Child.Age) // Linq2Objects can throw NullReferenceException
+    .Single().Should().Be(null);
+```
+
+This can be turned of by setting the following property to `false`:
+
+```csharp
+_moq.UseMoqqerEnumerableQuery = false;
+```
+
+
 ## Recursive Mocking
 
 As Moqqer creates a Mock, it goes through it's members and sets all overridable to return `Mock<T>.Object`'s
@@ -195,7 +225,6 @@ _moq.Mocks.Should().ContainKey(typeof(IBranch));
 ## Quicker Verification:
 
 ```csharp
-
 // Quickly Verify that a mock member was never called
 _moq.Verify<ILeaf>(x => x.Grow()).Never();
 
@@ -211,12 +240,11 @@ _moq.Verify<ILeaf>(x => x.Grow()).Times(2);
 _moq.Of<ILeaf>().Object.Grow();
 _moq.Verify<ILeaf>(x => x.Grow()).Times(Times.AtLeast(3));
 _moq.Verify<ILeaf>(x => x.Grow()).Times(Times.Between(3,7, Range.Inclusive));
-
 ```
 
 ## Concrete Implementation
 
-```casharp
+```csharp
 // Create your concrete implementation
 var fizz = new Fizz(3);
 var buzz = new Buzz(5);
@@ -237,6 +265,30 @@ _moq.Create<Fizz>().Divisor.Should().Be(25);
 _moq.Use("GitHub");
 _moq.Create<StringCtor>().Text.Should().Be("GitHub");
 ```
+
+## List 
+
+Moqqer provides auto-mocking of collections to `List<T>`. This allows for easier setup of methods that return `IList<T>` and `IQueryable<T>`, and potentially other Collection types in the future (*raise GitHubIssues or Pull Requests for suggestions*).
+
+Example
+
+```csharp
+
+var item = new Leaf(25);
+
+// Get instance of List<T>
+_moq.List<Leaf>()
+    .Add(item);
+                
+// Extension method to add T item to List<T>
+_moq.Add(item);
+
+// Confirm List has 2 Items
+_moq.Of<IContext>()
+    .Object.Leaves.Should().HaveCount(2);
+```
+
+
 # Moq Extensions
 
 # Default Mocks
@@ -251,7 +303,7 @@ _moq.Create<StringCtor>().Text.Should().Be("GitHub");
 
 # Func<T> Resolution
 
-Moqqer by default will resolve any `Func<T>` to `Func<Mock<T>>` if `T` is Mockable, otherwise to try resolve to `Func<_moq.Object<T>>`
+Moqqer by default will resolve any `Func<T>` to `Func<Mock<T>>` if `T` is Mockable, otherwise it will try resolve to `Func<_moq.Object<T>>`
 
 
 

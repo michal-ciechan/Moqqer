@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Moq;
 using MoqqerNamespace.Helpers;
+using MoqqerNamespace.MoqqerQueryable;
 
 namespace MoqqerNamespace
 {
@@ -12,9 +13,11 @@ namespace MoqqerNamespace
     {
         internal static readonly MethodInfo GetInstanceGenericMethod;
         internal static readonly MethodInfo GetInstanceFuncGenericMethod;
-        internal static readonly MethodInfo QueryableAsQueryableMethod;
+        internal static readonly MethodInfo GetQueryableGenericMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
+
+        public bool UseMoqqerEnumerableQuery { get; set; } = true;
 
         public Moqqer()
         {
@@ -26,10 +29,8 @@ namespace MoqqerNamespace
             var moqType = typeof(Moqqer);
             
             GetInstanceGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstance));
-            
-            QueryableAsQueryableMethod = typeof(Queryable)
-                .GetMethods(BindingFlags.Public | BindingFlags.Static)
-                .First(x => x.ContainsGenericParameters && x.Name == "AsQueryable");
+
+            GetQueryableGenericMethod = moqType.GetGenericMethod(nameof(GetQueryableGeneric));
 
             GetInstanceFuncGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstanceFunc));
         }
@@ -147,12 +148,26 @@ namespace MoqqerNamespace
 
                 var list = GetOrCreateObject(listType);
 
-                var queryable = QueryableAsQueryableMethod.MakeGenericMethod(genericArguments).Invoke(null, new[] { list });
+                var queryable = GetQueryable(genericArguments, list);
 
                 return AddToObjects(type, queryable);
             }
 
             return null;
+        }
+
+        private object GetQueryable(Type[] genericArguments, object list)
+        {
+            var meth = GetQueryableGenericMethod.MakeGenericMethod(genericArguments);
+
+            return meth.Invoke(this, new[] {list});
+        }
+
+        public IQueryable<T> GetQueryableGeneric<T>(IEnumerable<T> list)
+        {
+            return UseMoqqerEnumerableQuery
+                ? list.AsMoqqerQueryable()
+                : list.AsQueryable();
         }
 
         object GetOrCreateObject(Type type)

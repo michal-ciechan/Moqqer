@@ -57,10 +57,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\QueryableTest.cs" />
     <Compile Include="MoqExtensions\MoqFluentVerifyBuilderTests.cs" />
     <Compile Include="README\DefaultMocks.cs" />
     <Compile Include="TestClasses\Branch.cs" />
     <Compile Include="TestClasses\Buzz.cs" />
+    <Compile Include="TestClasses\Child.cs" />
     <Compile Include="TestClasses\ClassWith2Ctors1ContainingClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassWithCtorContainingClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassHavingParameterlessConcreteClass.cs" />
@@ -94,7 +96,9 @@
     <Compile Include="TestClasses\IMockSetup.cs" />
     <Compile Include="TestClasses\IInterfaceWithGenericMethod.cs" />
     <Compile Include="TestClasses\IParameterisedMethodClass.cs" />
+    <Compile Include="TestClasses\Parent.cs" />
     <Compile Include="TestClasses\Root.cs" />
+    <Compile Include="TestClasses\School.cs" />
     <Compile Include="TestClasses\StringCtor.cs" />
     <Compile Include="MoqqerTests.cs" />
     <Compile Include="TestClasses\IDepencyA.cs" />
