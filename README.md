@@ -10,8 +10,8 @@
 	- [Constructor Injection](#constructor-injection)
 	- [Concrete Class Injection](#concrete-class-injection)
 	- [Default Object Injection](#default-object-injection)
-	- [Default IQueryable<T> Implementation](#default-iqueryablet-implementation)
-	- [IQueryable<T> Null Guarding](#iqueryablet-null-guarding)
+	- [Default `IQueryable<T>` Implementation](#default-iqueryablet-implementation)
+	- [`IQueryable<T>` Null Guarding](#iqueryablet-null-guarding)
 	- [Recursive Mocking](#recursive-mocking)
 	- [Lazy Mocking](#lazy-mocking)
 	- [Quicker Verification:](#quicker-verification)
@@ -151,7 +151,7 @@ public void DefaultObjectInjection()
 }
 ```
 
-## Default IQueryable<T> Implementation
+## Default `IQueryable<T>` Implementation
 
 By default Moqqer will inject Mocks into types which are _Mockable_. For types which aren't Mockable, Moqqer will resolve those to the type or object as per the [Non Mockable Defaults](#non-mockable-defaults) below.
 
@@ -173,7 +173,7 @@ ctx.Leaves.Where(x => x.Age == 25)
 		.Should().HaveCount(1);
 ```
 
-## IQueryable<T> Null Guarding
+## `IQueryable<T>` Null Guarding
 
 By default, when using IQueryable and building expressions to query child objects, you do not have to null guard when using something like EF/Linq2Sql as SQL Server will gracefully handle these and set property to null. Where as in Linq2Objects (`SomeList.AsQueryable()`) this will cause a `NullReferenceException`.
 
