@@ -240,7 +240,7 @@ namespace MoqqerNamespace.Tests.Helpers
         [Test]
         [TestCase(nameof(AllLevels), 10000)]
         [TestCase(nameof(SingleLevel), null)]
-        public void EnumerableMoqqerQuery_Select_ExpressionType_Multiply_Integer_Plus_Decimal
+        public void EnumerableMoqqerQuery_Select_ExpressionType_Multiply_Integer_And_Decimal
             (string key, decimal? expected)
         {
             var queryable = GetQueryable(key);
@@ -259,7 +259,7 @@ namespace MoqqerNamespace.Tests.Helpers
         [TestCase(nameof(SingleLevel), null, null, null)]
         [TestCase(nameof(SingleLevel), null, 5, null)]
         [TestCase(nameof(SingleLevel), 5, 5, null)]
-        public void EnumerableMoqqerQuery_Select_ExpressionType_Multiply_NullableInteger_Plus_NullableDecimal
+        public void EnumerableMoqqerQuery_Select_ExpressionType_Multiply_NullableInteger_And_NullableDecimal
             (string key, int? integer, decimal? dec, decimal? expected)
         {
             var queryable = integer != null || dec != null
@@ -271,6 +271,40 @@ namespace MoqqerNamespace.Tests.Helpers
                 : GetQueryable(key);
 
             var q = queryable.Select(x => x.L1.L2.L3.L4.L5.NullableInteger * x.L1.L2.L3.L4.L5.NullableDecimal);
+
+            var res = q.FirstOrDefault();
+
+            res.Should().Be(expected);
+        }
+
+        [Test]
+        [TestCase(nameof(AllLevels), 100)]
+        [TestCase(nameof(SingleLevel), null)]
+        public void EnumerableMoqqerQuery_Select_ExpressionType_And_Integer_And_Integer
+            (string key, int? expected)
+        {
+            var queryable = GetQueryable(key);
+
+            var q = queryable.Select(x => (int?) x.L1.L2.L3.L4.L5.Integer100 & x.L1.L2.L3.L4.L5.Integer100);
+            
+            var res = q.FirstOrDefault();
+
+            res.Should().Be(expected);
+        }
+
+        [Test]
+        [TestCase(nameof(AllLevels), 5, 5)]
+        [TestCase(nameof(AllLevels), null, null)]
+        [TestCase(nameof(SingleLevel), null, null)]
+        [TestCase(nameof(SingleLevel), 5, null)]
+        public void EnumerableMoqqerQuery_Select_ExpressionType_And_NullableInteger_And_NullableDecimal
+            (string key, int? integer, int? expected)
+        {
+            var queryable = integer != null
+                ? GetQueryable(key, x => x.L1.L2.L3.L4.L5.NullableInteger = integer)
+                : GetQueryable(key);
+
+            var q = queryable.Select(x => x.L1.L2.L3.L4.L5.NullableInteger & x.L1.L2.L3.L4.L5.NullableInteger);
 
             var res = q.FirstOrDefault();
 

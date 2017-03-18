@@ -10,12 +10,16 @@
 	- [Constructor Injection](#constructor-injection)
 	- [Concrete Class Injection](#concrete-class-injection)
 	- [Default Object Injection](#default-object-injection)
+	- [Default IQueryable<T> Implementation](#default-iqueryablet-implementation)
+	- [IQueryable<T> Null Guarding](#iqueryablet-null-guarding)
 	- [Recursive Mocking](#recursive-mocking)
 	- [Lazy Mocking](#lazy-mocking)
 	- [Quicker Verification:](#quicker-verification)
 	- [Concrete Implementation](#concrete-implementation)
+	- [List](#list)
 - [Moq Extensions](#moq-extensions)
 - [Default Mocks](#default-mocks)
+- [Func<T> Resolution](#funct-resolution)
 - [Installing](#installing)
 - [Roadmap](#roadmap)
 	- [Method Name Selection](#method-name-selection)
@@ -169,9 +173,9 @@ ctx.Leaves.Where(x => x.Age == 25)
 		.Should().HaveCount(1);
 ```
 
-### Expression Null Guarding
+## IQueryable<T> Null Guarding
 
-By default, when using expressions to query child objects, you do not have to null guard when using something like EF/Linq2Sql as SQL Server will gracefully handle these and set property to null. Where as in Linq2Objects (`SomeList.AsQueryable()`) this will cause a `NullReferenceException`.
+By default, when using IQueryable and building expressions to query child objects, you do not have to null guard when using something like EF/Linq2Sql as SQL Server will gracefully handle these and set property to null. Where as in Linq2Objects (`SomeList.AsQueryable()`) this will cause a `NullReferenceException`.
 
 To overcome this, by default Moqqer will provide a custom `IQueryable` where it modifies expressions that contain reference type accessors and to gracefully handle null reference types.
 
@@ -266,7 +270,7 @@ _moq.Use("GitHub");
 _moq.Create<StringCtor>().Text.Should().Be("GitHub");
 ```
 
-## List 
+## List
 
 Moqqer provides auto-mocking of collections to `List<T>`. This allows for easier setup of methods that return `IList<T>` and `IQueryable<T>`, and potentially other Collection types in the future (*raise GitHubIssues or Pull Requests for suggestions*).
 
@@ -279,7 +283,7 @@ var item = new Leaf(25);
 // Get instance of List<T>
 _moq.List<Leaf>()
     .Add(item);
-                
+
 // Extension method to add T item to List<T>
 _moq.Add(item);
 

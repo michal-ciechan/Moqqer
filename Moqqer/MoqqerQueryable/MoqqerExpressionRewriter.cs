@@ -92,6 +92,7 @@ namespace MoqqerNamespace.MoqqerQueryable
                 case ExpressionType.MultiplyChecked:
                 case ExpressionType.Divide:
                 case ExpressionType.Modulo:
+                case ExpressionType.And:
                     return RewriteMethodBinaryExpression(body as BinaryExpression);
 
                 // Static
@@ -100,8 +101,6 @@ namespace MoqqerNamespace.MoqqerQueryable
                 case ExpressionType.Default:
                     break;
                 // TBD
-                case ExpressionType.And:
-                    break;
                 case ExpressionType.ArrayLength:
                     break;
                 case ExpressionType.ArrayIndex:
@@ -264,7 +263,7 @@ namespace MoqqerNamespace.MoqqerQueryable
             var left = RewriteExpression(expression.Left);
             var right = RewriteExpression(expression.Right);
 
-            return Expression.MakeBinary(ExpressionType.Add, left, right, expression.IsLiftedToNull, expression.Method, expression.Conversion);
+            return Expression.MakeBinary(expression.NodeType, left, right, expression.IsLiftedToNull, expression.Method, expression.Conversion);
         }
 
         private static Expression RewriteConditionalUnaryExpression(UnaryExpression expression)
