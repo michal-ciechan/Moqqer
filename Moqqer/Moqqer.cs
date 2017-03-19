@@ -11,6 +11,20 @@ namespace MoqqerNamespace
 {
     public class Moqqer
     {
+        /// <summary>
+        /// Should this throw when trying to select a value type from a reference type. 
+        /// E.g. x => x.NavigationProperty.Integer
+        /// Should throw an exception if SomeNullableType is Null? 
+        /// Because returning default SomeValueType is incorrect
+        /// Correct expression should be x => (int?) x.NavigationProperty.Integer 
+        /// so that null can be returned when NavigationProperty is null
+        /// </summary>
+        public static bool ThrowOnNonNullableReferenceTypeSelection
+        {
+            get => MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection;
+            set => MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection = value;
+        }
+
         internal static readonly MethodInfo GetInstanceGenericMethod;
         internal static readonly MethodInfo GetInstanceFuncGenericMethod;
         internal static readonly MethodInfo GetQueryableGenericMethod;
