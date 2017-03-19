@@ -130,7 +130,7 @@ classObject.Should().BeSameAs(moqedObject);
 
 ## Default Object Injection
 
-By default Moqqer will inject Mocks into types which are _Mockable_. For types which aren't Mockable, Moqqer will resolve those to the type or object as per the [Non Mockable Defaults](#non-mockable-defaults) below.
+By default Moqqer will inject Mocks into types which are _Mockable_. For types which aren't Mockable, Moqqer will resolve those to the type or object as per the [Non Mockable Defaults](#default-mocks) below.
 
 ```csharp
 public class StringConstructorClass
