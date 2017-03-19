@@ -190,11 +190,11 @@ var ctx = _moq.Of<IContext>().Object; // Get a mocked context
 ctx.Parents.Select(x => x.Name) // Standard accessor
     .Single().Should().Be(null);
 
-ctx.Parents.Select(x => (int?) x.Child.Age) // Linq2Objects can throw NullReferenceException
+ctx.Parents.Select(x => (int?) x.Child.Age) // Linq2Objects will throw NullReferenceException
     .Single().Should().Be(null);
 ```
 
-This can be turned of by setting the following property to `false`:
+This can be turned off by setting the following property to `false`:
 
 ```csharp
 _moq.UseMoqqerEnumerableQuery = false;
