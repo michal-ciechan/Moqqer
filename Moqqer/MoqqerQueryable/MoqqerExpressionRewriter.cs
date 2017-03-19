@@ -53,13 +53,29 @@ namespace MoqqerNamespace.MoqqerQueryable
             {
                 case ExpressionType.MemberAccess:
                     return RewriteMemberExpression(body as MemberExpression);
+                case ExpressionType.Call:
+                    return RewriteMethodCallExpression(body as MethodCallExpression);
 
                 // Projections - Select(x => ?)
                 case ExpressionType.New: // new { x }
                     return RewriteNewExpression(body as NewExpression);
+                case ExpressionType.MemberInit:
+                    return RewriteMemberInitExpression(body as MemberInitExpression);
+                case ExpressionType.ListInit:
+                    return RewriteListInitExpression(body as ListInitExpression);
+                case ExpressionType.NewArrayInit:
+                    return RewriteArrayExpression(body as NewArrayExpression);
+
                 case ExpressionType.Convert: // (int?) integer
                 case ExpressionType.ConvertChecked:
+                case ExpressionType.Negate:
+                case ExpressionType.NegateChecked:
+                case ExpressionType.Increment:
+                case ExpressionType.Decrement:
+                case ExpressionType.UnaryPlus:
                     return RewriteUnaryExpression(body as UnaryExpression);
+
+
                 // Comparison types - Where(x => ?)
                 case ExpressionType.Equal: // a == b
                 case ExpressionType.NotEqual: // a != b
@@ -93,6 +109,12 @@ namespace MoqqerNamespace.MoqqerQueryable
                 case ExpressionType.Divide:
                 case ExpressionType.Modulo:
                 case ExpressionType.And:
+                case ExpressionType.Or:
+                case ExpressionType.ExclusiveOr:
+                case ExpressionType.Power:
+                case ExpressionType.RightShift:
+                case ExpressionType.LeftShift:
+                case ExpressionType.Coalesce:
                     return RewriteMethodBinaryExpression(body as BinaryExpression);
 
                 // Static
@@ -100,80 +122,9 @@ namespace MoqqerNamespace.MoqqerQueryable
                 case ExpressionType.Parameter:
                 case ExpressionType.Default:
                     break;
-                // TBD
-                case ExpressionType.ArrayLength:
-                    break;
-                case ExpressionType.ArrayIndex:
-                    break;
-                case ExpressionType.Call:
-                    break;
-                case ExpressionType.Coalesce:
-                    break;
-                case ExpressionType.ExclusiveOr:
-                    break;
-                case ExpressionType.Invoke:
-                    break;
-                case ExpressionType.Lambda:
-                    break;
-                case ExpressionType.LeftShift:
-                    break;
-                case ExpressionType.ListInit:
-                    break;
-                case ExpressionType.MemberInit:
-                    break;
-                case ExpressionType.Negate:
-                    break;
-                case ExpressionType.UnaryPlus:
-                    break;
-                case ExpressionType.NegateChecked:
-                    break;
-                case ExpressionType.NewArrayInit:
-                    break;
-                case ExpressionType.NewArrayBounds:
-                    break;
-                case ExpressionType.Or:
-                    break;
-                case ExpressionType.Power:
-                    break;
-                case ExpressionType.Quote:
-                    break;
-                case ExpressionType.RightShift:
-                    break;
-                case ExpressionType.TypeAs:
-                    break;
-                case ExpressionType.TypeIs:
-                    break;
+
+                // Assignment
                 case ExpressionType.Assign:
-                    break;
-                case ExpressionType.Block:
-                    break;
-                case ExpressionType.DebugInfo:
-                    break;
-                case ExpressionType.Decrement:
-                    break;
-                case ExpressionType.Dynamic:
-                    break;
-                case ExpressionType.Extension:
-                    break;
-                case ExpressionType.Goto:
-                    break;
-                case ExpressionType.Increment:
-                    break;
-                case ExpressionType.Index:
-                    break;
-                case ExpressionType.Label:
-                    break;
-                case ExpressionType.RuntimeVariables:
-                    break;
-                case ExpressionType.Loop:
-                    break;
-                case ExpressionType.Switch:
-                    break;
-                case ExpressionType.Throw:
-                    break;
-                case ExpressionType.Try:
-                    break;
-                case ExpressionType.Unbox:
                     break;
                 case ExpressionType.AddAssign:
                     break;
@@ -211,6 +162,51 @@ namespace MoqqerNamespace.MoqqerQueryable
                     break;
                 case ExpressionType.PostDecrementAssign:
                     break;
+
+                // TBD
+                case ExpressionType.ArrayLength:
+                    break;
+                case ExpressionType.ArrayIndex:
+                    break;
+                case ExpressionType.Invoke:
+                    break;
+                case ExpressionType.Lambda:
+                    break;
+                case ExpressionType.NewArrayBounds:
+                    break;
+                case ExpressionType.Quote:
+                    break;
+                case ExpressionType.TypeAs:
+                    break;
+                case ExpressionType.TypeIs:
+                    break;
+                case ExpressionType.Block:
+                    break;
+                case ExpressionType.DebugInfo:
+                    break;
+                case ExpressionType.Dynamic:
+                    break;
+                case ExpressionType.Extension:
+                    break;
+                case ExpressionType.Goto:
+                    break;
+                case ExpressionType.Index:
+                    break;
+                case ExpressionType.Label:
+                    break;
+                case ExpressionType.RuntimeVariables:
+                    break;
+                case ExpressionType.Loop:
+                    break;
+                case ExpressionType.Switch:
+                    break;
+                case ExpressionType.Throw:
+                    break;
+                case ExpressionType.Try:
+                    break;
+                case ExpressionType.Unbox:
+                    break;
+                
                 case ExpressionType.TypeEqual:
                     break;
                 case ExpressionType.OnesComplement:
@@ -220,6 +216,80 @@ namespace MoqqerNamespace.MoqqerQueryable
             }
 
             return body;
+        }
+
+        private static Expression RewriteArrayExpression(NewArrayExpression expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression), $"Cannot {nameof(RewriteMemberInitExpression)} as it is null");
+
+            var newExpressions = expression.Expressions.Select(RewriteExpression).ToList();
+
+            return Expression.NewArrayInit(expression.Type.GetElementType(), newExpressions);
+        }
+
+        private static Expression RewriteListInitExpression(ListInitExpression expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression), $"Cannot {nameof(RewriteMemberInitExpression)} as it is null");
+
+            var newInitialisers = expression.Initializers.Select(RewriteListInitElementInitialisers).ToList();
+
+            var newExpression = RewriteExpression(expression.NewExpression) as NewExpression ?? expression.NewExpression;
+
+            return Expression.ListInit(newExpression, newInitialisers);
+        }
+
+        private static ElementInit RewriteListInitElementInitialisers(ElementInit init)
+        {
+            var newArgs = init.Arguments.Select(RewriteExpression).ToList();
+
+            return Expression.ElementInit(init.AddMethod, newArgs);
+        }
+
+        private static Expression RewriteMemberInitExpression(MemberInitExpression expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression), $"Cannot {nameof(RewriteMemberInitExpression)} as it is null");
+
+            var bindings = expression.Bindings.Select(RewriteMemberBinding).ToList();
+
+            var newExpression = Expression.MemberInit(expression.NewExpression, bindings);
+
+            return newExpression;
+        }
+
+        private static MemberBinding RewriteMemberBinding(MemberBinding binding)
+        {
+            switch (binding.BindingType)
+            {
+                case MemberBindingType.Assignment:
+                    return RewriteAssignmentMemberBinding(binding as MemberAssignment);
+                case MemberBindingType.MemberBinding:
+                    break;
+                case MemberBindingType.ListBinding:
+                    break;
+            }
+
+            return binding;
+        }
+
+        private static MemberBinding RewriteAssignmentMemberBinding(MemberAssignment binding)
+        {
+            return Expression.Bind(binding.Member, RewriteExpression(binding.Expression));
+        }
+
+        private static Expression RewriteMethodCallExpression(MethodCallExpression expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression), $"Cannot {nameof(RewriteMethodCallExpression)} as it is null");
+
+            var check = GetMethodCallMemberAccessCheckExpression(expression);
+
+            if (check == null)
+                return expression;
+
+            return Expression.Condition(check, expression, GetDefaultConstantExpression(expression));
         }
 
         /// <summary>
@@ -339,8 +409,42 @@ namespace MoqqerNamespace.MoqqerQueryable
             if (unaryExpression != null)
                 return GetMemberAccessCheckExpression(unaryExpression.Operand);
 
+            var methodCallExpression = expression as MethodCallExpression;
+
+            if (methodCallExpression != null)
+                return GetMethodCallMemberAccessCheckExpression(methodCallExpression);
+
+
             return null;
         }
+
+        private static Expression GetMethodCallMemberAccessCheckExpression(MethodCallExpression expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression), $"Cannot {nameof(GetMethodCallMemberAccessCheckExpression)} as it is null");
+
+            var memberCheckList = GetListOfMemberAccesExpressions(expression.Object as MemberExpression);
+
+            if (memberCheckList == null || memberCheckList.Count == 0)
+                return null;
+
+            Expression expr = null;
+
+            foreach (var parent in memberCheckList)
+            {
+                if (parent.Type.IsValueType)
+                    continue;
+
+                var isNullExpression = Expression.MakeBinary(ExpressionType.NotEqual, parent, Expression.Constant(null, parent.Type));
+
+                expr = expr == null
+                    ? isNullExpression
+                    : Expression.MakeBinary(ExpressionType.AndAlso, isNullExpression, expr);
+            }
+
+            return expr;
+        }
+
 
         /// <summary>
         /// This is to rewrite "x.L1.Name" -> "x != null && x.L1 != null"
@@ -350,21 +454,10 @@ namespace MoqqerNamespace.MoqqerQueryable
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression), $"Cannot {nameof(GetBinaryMemberAccessCheckExpression)} as it is null");
 
-            var memberExpressions = GetListOfMemberExpressions(expression);
-
-            // Ensure Last expression is a paramater
-            var parameter = memberExpressions?.Last()?.Expression as ParameterExpression;
-            
-            if(parameter == null)
-                return null;
-            
-            // Get all members that need to be checked
-            var memberCheckList = memberExpressions.Cast<Expression>()
-                .Union(new[] { parameter })
-                .ToList();
+            var memberCheckList = GetListOfMemberAccesExpressions(expression);
 
             Expression expr = null;
-            
+
             foreach (var parent in memberCheckList.Skip(1))
             {
                 if(parent.Type.IsValueType)
@@ -378,6 +471,25 @@ namespace MoqqerNamespace.MoqqerQueryable
             }
 
             return expr;
+        }
+
+        private static List<Expression> GetListOfMemberAccesExpressions(MemberExpression expression)
+        {
+            var memberExpressions = GetListOfMemberExpressions(expression);
+
+            if (memberExpressions == null || memberExpressions.Count == 0)
+                return null;
+            
+            // Get all members that need to be checked
+            var memberCheckList = memberExpressions.Cast<Expression>().ToList();
+
+            // Ensure Last expression is a paramater
+            var parameter = memberExpressions.Last()?.Expression as ParameterExpression;
+
+            if(parameter!= null) 
+                memberCheckList.Add(parameter);
+                    
+            return memberCheckList;
         }
 
         private static Expression RewriteComparisonBinaryExpression(BinaryExpression expression)
@@ -421,26 +533,11 @@ namespace MoqqerNamespace.MoqqerQueryable
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression), $"Cannot {nameof(RewriteMemberExpression)} as it is null");
 
-            var memberExpressions = GetListOfMemberExpressions(expression);
-
-            // Ensure Last expression is a paramater
-            var last = memberExpressions.Last();
-
-            if (last.Expression.NodeType != ExpressionType.Parameter)
-                throw new Exception(
-                    "Most inner expression must be of type Parameter which represents something like 'x => x.Middle.Inner.Name', where the first x accessor is the most inner expression");
-
-            var parameter = last.Expression as ParameterExpression;
-
-
-            // Get all member that need to be checked
-            var memberCheckList = memberExpressions.Cast<Expression>()
-                .Union(new[] {parameter})
-                .ToList();
+            var memberCheckList = GetListOfMemberAccesExpressions(expression);
 
             // Crate IIF Expressions starting in midle
             var value = memberCheckList.First();
-            foreach (var parent in memberCheckList.Skip(1))
+            foreach (var parent in memberCheckList.Skip(1).ToList())
             {
                 var isNullExpression = Expression.MakeBinary(ExpressionType.Equal, parent, Expression.Constant(null));
 
