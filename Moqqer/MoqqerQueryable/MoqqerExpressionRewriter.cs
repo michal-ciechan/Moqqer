@@ -423,24 +423,34 @@ namespace MoqqerNamespace.MoqqerQueryable
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression), $"Cannot {nameof(GetMethodCallMemberAccessCheckExpression)} as it is null");
 
-            var memberCheckList = GetListOfMemberAccesExpressions(expression.Object as MemberExpression);
-
-            if (memberCheckList == null || memberCheckList.Count == 0)
-                return null;
-
+            var objectCheckList = GetListOfMemberAccesExpressions(expression.Object as MemberExpression);
+            var argumentChecklist = expression.Arguments.Select(GetMemberAccessCheckExpression)
+                .Where(x => x != null)
+                .ToList();
+            
             Expression expr = null;
 
-            foreach (var parent in memberCheckList)
-            {
-                if (parent.Type.IsValueType)
-                    continue;
+            if (objectCheckList != null && objectCheckList.Count > 0)
+                foreach (var parent in objectCheckList)
+                {
+                    if (parent.Type.IsValueType)
+                        continue;
 
-                var isNullExpression = Expression.MakeBinary(ExpressionType.NotEqual, parent, Expression.Constant(null, parent.Type));
+                    var isNullExpression = Expression.MakeBinary(ExpressionType.NotEqual, parent, Expression.Constant(null, parent.Type));
 
-                expr = expr == null
-                    ? isNullExpression
-                    : Expression.MakeBinary(ExpressionType.AndAlso, isNullExpression, expr);
-            }
+                    expr = expr == null
+                        ? isNullExpression
+                        : Expression.MakeBinary(ExpressionType.AndAlso, isNullExpression, expr);
+                }
+
+            if(argumentChecklist.Count > 0)
+                foreach (var parent in argumentChecklist)
+                {
+
+                    expr = expr == null
+                        ? parent
+                        : Expression.MakeBinary(ExpressionType.AndAlso, parent, expr);
+                }
 
             return expr;
         }

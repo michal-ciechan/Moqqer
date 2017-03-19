@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using FluentAssertions;
@@ -11,12 +12,12 @@ namespace MoqqerNamespace.Tests.Helpers
     [TestFixture]
     internal class QueryableTestTests
     {
-        private class Level0
+        private class Level0 : Level5
         {
             public Level1 L1 { get; set; }
         }
 
-        private class Level1
+        private class Level1 : Level5
         {
             public Level2 L2 { get; set; }
         }
@@ -45,6 +46,7 @@ namespace MoqqerNamespace.Tests.Helpers
             public int? NullableInteger2 { get; set; }
             public decimal? NullableDecimal { get; set; }
             public bool Boolean { get; set; }
+            public bool Boolean2 { get; set; }
 
             public bool BooleanMethod()
             {
@@ -161,6 +163,28 @@ namespace MoqqerNamespace.Tests.Helpers
                 : (Action<Level0>) null);
 
             var q = queryable.Where(x => x.L1.L2.L3.L4.L5.BooleanMethod());
+
+            var res = q.FirstOrDefault();
+
+            if (expected)
+                res.Should().NotBeNull();
+            else
+                res.Should().BeNull();
+        }
+
+        [Test]
+        [TestCase(nameof(AllLevels), null, true)]
+        [TestCase(nameof(AllLevels), "", true)]
+        [TestCase(nameof(AllLevels), "Test", false)]
+        [TestCase(nameof(SingleLevel), null, false)]
+        public void EnumerableMoqqerQuery_Where_ExpressionType_StaticMethodCall_Name_IsNullOrEmpty
+            (string key, string str, bool expected)
+        {
+            var queryable = GetQueryable(key, key == nameof(AllLevels)
+                ? x => x.L1.Name = str
+                : (Action<Level0>) null);
+
+            var q = queryable.Where(x => string.IsNullOrEmpty(x.L1.Name));
 
             var res = q.FirstOrDefault();
 
@@ -583,6 +607,26 @@ namespace MoqqerNamespace.Tests.Helpers
         }
 
         [Test]
+        [TestCase(nameof(AllLevels), false, 5, "False")]
+        [TestCase(nameof(AllLevels), false, null, "True")]
+        [TestCase(nameof(SingleLevel), false, null, "False")]
+        public void EnumerableMoqqerQuery_Select_ExpressionType_MemberInit_Name_As_ConditionalWithNot
+            (string key, bool boolean, int? integer, string expected)
+        {
+            var queryable = integer != null
+                ? GetQueryable(key, x => x.L1.L2.L3.L4.L5.NullableInteger = integer)
+                : GetQueryable(key);
+
+            var q = queryable.Select(x => new Level5 {
+                Name = x.L1.L2.L3.L4.L5.Boolean || !x.L1.L2.L3.L4.L5.NullableInteger.HasValue ? "True" : "False"
+            });
+
+            var res = q.First();
+
+            res.Name.Should().Be(expected);
+        }
+
+        [Test]
         [TestCase(nameof(AllLevels), 1)]
         [TestCase(nameof(SingleLevel), null)]
         public void EnumerableMoqqerQuery_Select_ExpressionType_Divide_Integer_And_Decimal
@@ -595,6 +639,39 @@ namespace MoqqerNamespace.Tests.Helpers
             var res = q.FirstOrDefault();
 
             res.Should().Be(expected);
+        }
+
+        [Test]
+        [TestCase(nameof(AllLevels), 1, true, true)]
+        [TestCase(nameof(AllLevels), 0, true, false)]
+        [TestCase(nameof(AllLevels), 1, false, false)]
+        [TestCase(nameof(AllLevels), 0, false, false)]
+        [TestCase(nameof(SingleLevel), 1, true, null)]
+        public void EnumerableMoqqerQuery_AsNoTracking_Where_ExpressionType_AndAlso
+            (string key, int integer, bool boolean, bool hasExpected)
+        {
+            var queryable = GetQueryable(key, x =>
+            {
+                x.L1.L2.L3.L4.L5.Integer = integer;
+                x.L1.L2.L3.L4.L5.Boolean = boolean;
+            });
+
+            // AsNoTracking just returns source if it is not  EF DbQuery/ObejctQuery and does not have public method available.
+            var q = queryable.Where(x => x.L1.L2.L3.L4.L5.Boolean && x.L1.L2.L3.L4.L5.Integer == 1)
+                .Select(x => new Level5 {Integer = x.L1.L2.L3.L4.L5.Integer});
+
+            var res = q.FirstOrDefault();
+
+
+            if (!hasExpected)
+            {
+                res.Should().BeNull();
+                return;
+            }
+
+            Debug.Assert(res != null, "res != null");
+
+            res.Integer.Should().Be(integer);
         }
 
         [Test]
