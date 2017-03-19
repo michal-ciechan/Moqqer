@@ -21,8 +21,8 @@ namespace MoqqerNamespace
         /// </summary>
         public static bool ThrowOnNonNullableReferenceTypeSelection
         {
-            get => MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection;
-            set => MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection = value;
+            get { return MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection; }
+            set { MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection = value; }
         }
 
         internal static readonly MethodInfo GetInstanceGenericMethod;
