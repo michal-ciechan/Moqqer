@@ -202,7 +202,7 @@ _moq.UseMoqqerEnumerableQuery = false;
 
 ## AsMoqqerQueryable()
 
-The above `IQueryable<T>` can also be "Null Guarded" when testing, by calling `IEnumerable<T>.AsMoqeerQueryable()` rather than `IEnumerable<T>.AsQueryable()`.
+The above `IQueryable<T>` can also be "Null Guarded" when testing, by calling `IEnumerable<T>.AsMoqqerQueryable()` rather than `IEnumerable<T>.AsQueryable()`.
 
 Example
 
