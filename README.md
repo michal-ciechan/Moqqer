@@ -154,7 +154,7 @@ public void DefaultObjectInjection()
 
 ## Default `IQueryable<T>` Implementation
 
-By default Moqqer will inject Mocks into types which are _Mockable_. For types which aren't Mockable, Moqqer will resolve those to the type or object as per the [Non Mockable Defaults](#non-mockable-defaults) below.
+By default Moqqer will inject Mocks into types which are _Mockable_. For types which aren't Mockable, Moqqer will resolve those to the type or object as per the [Non Mockable Defaults](#default-mocks) below.
 
 e.g. This helps with testing Entity Framework repository/expression logic allowing you to use `Lists` as if they were the backing Tables.
 
