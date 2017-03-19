@@ -47,6 +47,7 @@ namespace MoqqerNamespace.Tests.Helpers
             public decimal? NullableDecimal { get; set; }
             public bool Boolean { get; set; }
             public bool Boolean2 { get; set; }
+            public ICollection<Level5> Collection { get; set; } = new List<Level5>();
 
             public bool BooleanMethod()
             {
@@ -185,6 +186,27 @@ namespace MoqqerNamespace.Tests.Helpers
                 : (Action<Level0>) null);
 
             var q = queryable.Where(x => string.IsNullOrEmpty(x.L1.Name));
+
+            var res = q.FirstOrDefault();
+
+            if (expected)
+                res.Should().NotBeNull();
+            else
+                res.Should().BeNull();
+        }
+
+        [Test]
+        [TestCase(nameof(AllLevels), true)]
+        [TestCase(nameof(AllLevels), false)]
+        [TestCase(nameof(SingleLevel), false)]
+        public void EnumerableMoqqerQuery_Where_ExpressionType_ExtensionMethodCall_Collection_Any
+            (string key, bool expected)
+        {
+            var queryable = GetQueryable(key, expected
+                ? x => x.L1.Collection = new List<Level5> { new Level5()}
+                : (Action<Level0>) null);
+
+            var q = queryable.Where(x => x.L1.Collection.Any());
 
             var res = q.FirstOrDefault();
 
