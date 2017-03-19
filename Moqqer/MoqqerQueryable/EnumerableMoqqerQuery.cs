@@ -74,7 +74,10 @@ namespace MoqqerNamespace.MoqqerQueryable
         {
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
-            return EnumerableExecutor.Create(expression).ExecuteBoxed();
+
+            var newExpression = MoqqerExpressionRewriter.RewriteLinqCall(expression);
+
+            return EnumerableExecutor.Create(newExpression).ExecuteBoxed();
         }
 
         // see above
@@ -84,7 +87,10 @@ namespace MoqqerNamespace.MoqqerQueryable
                 throw new ArgumentNullException(nameof(expression));
             if (!typeof(TS).IsAssignableFrom(expression.Type))
                 throw new ArgumentOutOfRangeException(nameof(expression));
-            return new EnumerableExecutor<TS>(expression).Execute();
+
+            var newExpression = MoqqerExpressionRewriter.RewriteLinqCall(expression);
+
+            return new EnumerableExecutor<TS>(newExpression).Execute();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

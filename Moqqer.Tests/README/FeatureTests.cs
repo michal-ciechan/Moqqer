@@ -7,6 +7,7 @@ using System.Runtime.ExceptionServices;
 using FluentAssertions;
 using Moq;
 using MoqqerNamespace.Extensions;
+using MoqqerNamespace.MoqqerQueryable;
 using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
 
@@ -188,6 +189,23 @@ namespace MoqqerNamespace.Tests.README
             Action act = () => ctx.Parents.Select(x => (int?)x.Child.Age).Single();
 
             act.ShouldThrow<NullReferenceException>("x.Child is null");
+        }
+
+        [Test]
+        [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
+        public void DefaultQueryableImplementation_AsMoqqerQueryablef()
+        {
+            var list = new List<Parent>
+            {
+                new Parent()
+            };
+
+            var queryable = list.AsMoqqerQueryable();
+
+            // list.AsQueryable() would throw a NullReferenceException as `Child` is `null`
+            var name = queryable.FirstOrDefault(x => x.Child.Name == "Test");
+
+            name.Should().Be(null);
         }
 
 
