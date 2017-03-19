@@ -12,6 +12,7 @@
 	- [Default Object Injection](#default-object-injection)
 	- [Default `IQueryable<T>` Implementation](#default-iqueryablet-implementation)
 	- [`IQueryable<T>` Null Guarding](#iqueryablet-null-guarding)
+	- [AsMoqqerQueryable()](#asmoqqerqueryable)
 	- [Recursive Mocking](#recursive-mocking)
 	- [Lazy Mocking](#lazy-mocking)
 	- [Quicker Verification:](#quicker-verification)
@@ -199,6 +200,25 @@ This can be turned of by setting the following property to `false`:
 _moq.UseMoqqerEnumerableQuery = false;
 ```
 
+## AsMoqqerQueryable()
+
+The above `IQueryable<T>` can also be "Null Guarded" when testing, by calling `IEnumerable<T>.AsMoqeerQueryable()` rather than `IEnumerable<T>.AsQueryable()`.
+
+Example
+
+```csharp
+var list = new List<Parent>
+{
+    new Parent()
+};
+
+var queryable = list.AsMoqqerQueryable();
+
+// list.AsQueryable() would throw a NullReferenceException as `Child` is `null`
+var name = queryable.FirstOrDefault(x => x.Child.Name == "Test");
+
+name.Should().Be(null);
+```
 
 ## Recursive Mocking
 
