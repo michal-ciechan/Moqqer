@@ -222,7 +222,7 @@ name.Should().Be(null);
 
 ## Recursive Mocking
 
-As Moqqer creates a Mock, it goes through it's members and sets all overridable to return `Mock<T>.Object`'s
+As Moqqer creates a Mock, it goes through it's members and sets all overridable members to return `Mock<T>.Object`'s
 
 ```csharp
 var root = _moq.Create<Root>();
