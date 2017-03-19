@@ -327,7 +327,7 @@ _moq.Of<IContext>()
 
 # Func<T> Resolution
 
-Moqqer by default will resolve any `Func<T>` to `Func<Mock<T>>` if `T` is Mockable, otherwise it will try resolve to `Func<_moq.Object<T>>`
+Moqqer by default will resolve any `Func<T>` to `Func<Mock<T>.Object>` if `T` is Mockable, otherwise it will try resolve to `Func<_moq.Object<T>>`
 
 
 
