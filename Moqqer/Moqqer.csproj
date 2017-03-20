@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Extensions\MoqFluentVerifyBuilder.cs" />
     <Compile Include="Extensions\MoqqerExtensions.cs" />
+    <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
     <Compile Include="IMoqqerObjectContext.cs" />
     <Compile Include="MoqFactory.cs" />
     <Compile Include="Moqqer.cs" />

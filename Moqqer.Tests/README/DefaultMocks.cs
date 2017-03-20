@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using MoqqerNamespace;
@@ -34,6 +35,21 @@ namespace MoqqerNamespace.Tests.README
         public void IList()
         {
             MoqObjectOfShouldReturn<IList<int>, List<int>>();
+        }
+
+        [Test]
+        public void ObservableCollection()
+        {
+            var obs = _moq.Object<ObservableCollection<int>>();
+            var list = _moq.List<int>();
+
+            list.Add(100);
+
+            obs.Should().BeEquivalentTo(new[] {100});
+
+            obs.Remove(100);
+
+            list.Should().BeEmpty("integer was removed from Observeable Collection");
         }
         
         public void MoqObjectOfShouldReturn<TType, TMockType>() where TType : class

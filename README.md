@@ -324,6 +324,7 @@ _moq.Of<IContext>()
 |`string`  |  `string.Empty`
 |`List<T>` |  `moq.List<T>()`
 |`IList<T>` |  `moq.List<T>()`
+|`ObservableCollection<T>` | `ObservableCollection<T>` that is backed by `moq.List<T>()`
 |`IQueryable<T>` |  `moq.List<T>()`
 |Mockable Object | `Mock<T>`
 
