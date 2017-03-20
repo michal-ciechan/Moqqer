@@ -326,6 +326,8 @@ _moq.Of<IContext>()
 |`IList<T>` |  `moq.List<T>()`
 |`ObservableCollection<T>` | `ObservableCollection<T>` that is backed by `moq.List<T>()`
 |`IQueryable<T>` |  `moq.List<T>()`
+|`Task` |  Completed Task e.g. `Task.FromResult(true)`
+|`Task<T>` | Completed task with Mocked/Default `Task.Result` of type `T` <br>e.g. `Task.FromResult(moq.Of<T> || moq.Object<T>)`
 |Mockable Object | `Mock<T>`
 
 # Func<T> Resolution

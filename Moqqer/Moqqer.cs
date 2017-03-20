@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Moq;
-using MoqqerNamespace.Extensions;
+using MoqqerNamespace.DefaultFactories;
 using MoqqerNamespace.Helpers;
 using MoqqerNamespace.MoqqerQueryable;
 
@@ -29,8 +29,6 @@ namespace MoqqerNamespace
 
         internal static readonly MethodInfo GetInstanceGenericMethod;
         internal static readonly MethodInfo GetInstanceFuncGenericMethod;
-        internal static readonly MethodInfo GetQueryableGenericMethod;
-        internal static readonly MethodInfo GetObservableCollectionGenericMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
 
@@ -39,19 +37,23 @@ namespace MoqqerNamespace
         public Moqqer()
         {
             Objects.Add(typeof(string), string.Empty);
+            Objects.Add(typeof(Task), TaskHelper.CompletedTask);
         }
+
+        public List<IDefaultFactory> DefaultFactories { get; set; } = new List<IDefaultFactory>
+        {
+            new ListDefaultFactory(),
+            new ObservableCollectionDefaultFactory(),
+            new QueryableDefaultFactory(),
+            new TaskDefaultFactory(),
+        };
 
         static Moqqer()
         {
             var moqType = typeof(Moqqer);
             
             GetInstanceGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstance));
-
-            GetQueryableGenericMethod = moqType.GetGenericMethod(nameof(GetQueryableGeneric));
-
             GetInstanceFuncGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstanceFunc));
-
-            GetObservableCollectionGenericMethod = moqType.GetGenericMethod(nameof(GetObservableCollectionGeneric));
         }
 
         public T Create<T>() where T : class
@@ -145,7 +147,7 @@ namespace MoqqerNamespace
             if (Objects.ContainsKey(type))
                 return Objects[type];
 
-            var generic = type.GetGenericTypeDefinition();
+            var openType = type.GetGenericTypeDefinition();
 
             var genericArguments = type.GetGenericArguments();
 
@@ -153,73 +155,20 @@ namespace MoqqerNamespace
             if (genericArguments.Any(x => x.IsGenericParameter))
                 return null;
 
-            if (typeof(List<>).IsOpenGenericAssignableToOpenGenericType(generic))
+            foreach (var factory in DefaultFactories)
             {
-                var list = GetOrCreateList(genericArguments);
+                if(!factory.CanHandle(type, openType, genericArguments))
+                    continue;
 
-                return AddToObjects(type, list);
-            }
+                var obj = factory.Create(this, type, openType, genericArguments);
 
-            if (generic == typeof(ObservableCollection<>))
-            {
-                var list = GetOrCreateList(genericArguments);
-
-                var collection = GetObservableCollection(genericArguments, list);
-
-                return AddToObjects(type, collection);
-            }
-
-            if (generic == typeof(IQueryable<>))
-            {
-                var list = GetOrCreateList(genericArguments);
-
-                var queryable = GetQueryable(genericArguments, list);
-
-                return AddToObjects(type, queryable);
+                return AddToObjects(type, obj);
             }
 
             return null;
         }
 
-        private object GetObservableCollection(Type[] genericArguments, object list)
-        {
-            var meth = GetObservableCollectionGenericMethod.MakeGenericMethod(genericArguments);
-
-            return meth.Invoke(this, new[] { list });
-        }
-
-        public ObservableCollection<T> GetObservableCollectionGeneric<T>(IList<T> list)
-        {
-            var collection = new ObservableCollection<T>(list);
-
-            collection.SetItems(list);
-
-            return collection;
-        }
-
-        private object GetOrCreateList(Type[] genericArguments)
-        {
-            var listType = typeof(List<>).MakeGenericType(genericArguments);
-
-            var list = GetOrCreateObject(listType);
-            return list;
-        }
-
-        private object GetQueryable(Type[] genericArguments, object list)
-        {
-            var meth = GetQueryableGenericMethod.MakeGenericMethod(genericArguments);
-
-            return meth.Invoke(this, new[] {list});
-        }
-
-        public IQueryable<T> GetQueryableGeneric<T>(IEnumerable<T> list)
-        {
-            return UseMoqqerEnumerableQuery
-                ? list.AsMoqqerQueryable()
-                : list.AsQueryable();
-        }
-
-        object GetOrCreateObject(Type type)
+        internal object GetOrCreateObject(Type type)
         {
             object res;
 

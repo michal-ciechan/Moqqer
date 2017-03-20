@@ -85,6 +85,7 @@
     <Compile Include="TestClasses\IContext.cs" />
     <Compile Include="TestClasses\IDefaultMethods.cs" />
     <Compile Include="TestClasses\IFizz.cs" />
+    <Compile Include="TestClasses\IHaveTasks.cs" />
     <Compile Include="TestClasses\ILeaf.cs" />
     <Compile Include="TestClasses\IOpenGenericInterfaceWithTListReturnTypes.cs" />
     <Compile Include="TestClasses\IOpenGenericMethodsWithClosedGenericListReturnTypes.cs" />

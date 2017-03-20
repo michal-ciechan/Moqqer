@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
-using MoqqerNamespace;
 using NUnit.Framework;
 
 namespace MoqqerNamespace.Tests.README
@@ -50,6 +50,28 @@ namespace MoqqerNamespace.Tests.README
             obs.Remove(100);
 
             list.Should().BeEmpty("integer was removed from Observeable Collection");
+        }
+
+        [Test]
+        public void TaskT()
+        {
+            var task = _moq.Object<Task<string>>();
+
+            task.Should().NotBeNull();
+
+            task.IsCompleted.Should().BeTrue();
+
+            task.Result.Should().Be(_moq.Object<string>());
+        }
+
+        [Test]
+        public void Task()
+        {
+            var task = _moq.Object<Task>();
+
+            task.Should().NotBeNull();
+
+            task.IsCompleted.Should().BeTrue();
         }
         
         public void MoqObjectOfShouldReturn<TType, TMockType>() where TType : class

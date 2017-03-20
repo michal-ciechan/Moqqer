@@ -21,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <OutputPath>bin\Release\net40\</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,6 +40,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
@@ -54,9 +57,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultFactories\BaseGenericDefaultFactory.cs" />
+    <Compile Include="DefaultFactories\IDefaultFactory.cs" />
+    <Compile Include="DefaultFactories\ListDefaultFactory.cs" />
+    <Compile Include="DefaultFactories\ObservableCollectionDefaultFactory.cs" />
+    <Compile Include="DefaultFactories\QueryableDefaultFactory.cs" />
+    <Compile Include="DefaultFactories\TaskDefaultFactory.cs" />
     <Compile Include="Extensions\MoqFluentVerifyBuilder.cs" />
     <Compile Include="Extensions\MoqqerExtensions.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
+    <Compile Include="Helpers\TaskHelper.cs" />
     <Compile Include="IMoqqerObjectContext.cs" />
     <Compile Include="MoqFactory.cs" />
     <Compile Include="Moqqer.cs" />

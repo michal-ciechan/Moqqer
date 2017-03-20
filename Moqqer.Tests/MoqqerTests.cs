@@ -79,6 +79,53 @@ namespace MoqqerNamespace.Tests
                 .Should().BeSameAs(_moq.Object<List<string>>());
         }
 
+        /// <summary>
+        ///     Issue #15
+        /// </summary>
+        [Test]
+        public void Of_IHaveTasks_Mocks_SimpleTask_Method_ReturnsCompletedTask()
+        {
+            var res = _moq.Of<IHaveTasks>().Object;
+
+            var task = res.SimpleTask();
+
+            task.Should().NotBeNull();
+            task.IsCompleted.Should().BeTrue();
+        }
+
+        /// <summary>
+        ///     Issue #15
+        /// </summary>
+        [Test]
+        public void Of_IHaveTasks_Mocks_StringTask_Method_ReturnsCompletedTask_WithDefaultString()
+        {
+            var res = _moq.Of<IHaveTasks>().Object;
+
+            var task = res.StringTask();
+
+            task.Should().NotBeNull();
+            task.IsCompleted.Should().BeTrue();
+
+            task.Result.Should().Be(_moq.Object<string>());
+        }
+        /// <summary>
+        ///     Issue #15
+        /// </summary>
+        [Test]
+        public void Of_IHaveTasks_Mocks_LeafTask_Method_ReturnsCompletedTask_WithLeafMoq()
+        {
+            var res = _moq.Of<IHaveTasks>().Object;
+
+            var task = res.LeafTask();
+
+            task.Should().NotBeNull();
+            task.IsCompleted.Should().BeTrue();
+
+            task.Result.Should().NotBeNull();
+
+            task.Result.Should().Be(_moq.Of<ILeaf>().Object);
+        }
+
         [Test]
         public void Create_ClassWitIInterfaceWithGenericMethodParam_CanCreate()
         {
