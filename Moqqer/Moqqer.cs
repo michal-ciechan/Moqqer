@@ -23,8 +23,8 @@ namespace MoqqerNamespace
         /// </summary>
         public static bool ThrowOnNonNullableReferenceTypeSelection
         {
-            get { return MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection; }
-            set { MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection = value; }
+            get => MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection;
+            set => MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection = value;
         }
 
         internal static readonly MethodInfo GetInstanceGenericMethod;
@@ -170,9 +170,8 @@ namespace MoqqerNamespace
 
         internal object GetOrCreateObject(Type type)
         {
-            object res;
 
-            if (Objects.TryGetValue(type, out res))
+            if (Objects.TryGetValue(type, out object res))
                 return res;
 
             res = Activator.CreateInstance(type);

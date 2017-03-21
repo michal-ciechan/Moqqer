@@ -382,40 +382,33 @@ namespace MoqqerNamespace.MoqqerQueryable
         /// </summary>
         private static Expression GetMemberAccessCheckExpression(Expression expression)
         {
-            var memberAccess = expression as MemberExpression;
-
-            if (memberAccess != null)
-                return GetBinaryMemberAccessCheckExpression(memberAccess);
-
-            var binaryExpr = expression as BinaryExpression;
-
-            if (binaryExpr != null)
+            switch (expression)
             {
-                var left = GetMemberAccessCheckExpression(binaryExpr.Left);
-                var right = GetMemberAccessCheckExpression(binaryExpr.Right);
+                case MemberExpression member:
+                    return GetBinaryMemberAccessCheckExpression(member);
 
-                if (left == null && right == null)
+                case BinaryExpression binary:
+                    var left = GetMemberAccessCheckExpression(binary.Left);
+                    var right = GetMemberAccessCheckExpression(binary.Right);
+
+                    if (left == null && right == null)
+                        return null;
+                    if (left == null)
+                        return right;
+                    if (right == null)
+                        return left;
+
+                    return Expression.MakeBinary(ExpressionType.AndAlso, left, right);
+
+                case UnaryExpression unary:
+                    return GetMemberAccessCheckExpression(unary.Operand);
+
+                case MethodCallExpression method:
+                    return GetMethodCallMemberAccessCheckExpression(method);
+
+                default:
                     return null;
-                if (left == null)
-                    return right;
-                if (right == null)
-                    return left;
-
-                return Expression.MakeBinary(ExpressionType.AndAlso, left, right);
             }
-
-            var unaryExpression = expression as UnaryExpression;
-
-            if (unaryExpression != null)
-                return GetMemberAccessCheckExpression(unaryExpression.Operand);
-
-            var methodCallExpression = expression as MethodCallExpression;
-
-            if (methodCallExpression != null)
-                return GetMethodCallMemberAccessCheckExpression(methodCallExpression);
-
-
-            return null;
         }
 
         private static Expression GetMethodCallMemberAccessCheckExpression(MethodCallExpression expression)
@@ -494,11 +487,9 @@ namespace MoqqerNamespace.MoqqerQueryable
             var memberCheckList = memberExpressions.Cast<Expression>().ToList();
 
             // Ensure Last expression is a paramater
-            var parameter = memberExpressions.Last()?.Expression as ParameterExpression;
-
-            if(parameter!= null) 
+            if (memberExpressions.Last()?.Expression is ParameterExpression parameter)
                 memberCheckList.Add(parameter);
-                    
+
             return memberCheckList;
         }
 

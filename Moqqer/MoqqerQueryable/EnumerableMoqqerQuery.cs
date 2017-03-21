@@ -119,13 +119,11 @@ namespace MoqqerNamespace.MoqqerQueryable
 
         public override string ToString()
         {
-            var c = _expression as ConstantExpression;
-            if (c != null && c.Value == this)
+            if (_expression is ConstantExpression c && c.Value == this)
             {
-                if (_enumerable != null)
-                    return _enumerable.ToString();
-                return "null";
+                return _enumerable?.ToString() ?? "null";
             }
+
             return _expression.ToString();
         }
     }
