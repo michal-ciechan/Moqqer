@@ -56,20 +56,24 @@ namespace MoqqerNamespace
             GetInstanceFuncGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstanceFunc));
         }
 
-        public T Create<T>() where T : class
+        public T Create<T>(bool autogenerate = false) where T : class
         {
-            var type = typeof(T);
+            return Create(typeof(T), autogenerate) as T;
+        }
 
-            var ctor = type.FindConstructor(HasObjectOrDefault);
+        private object Create(Type type, bool autogenerate)
+        {
+            var canCreate = autogenerate ? (Predicate<Type>)CanCreate : HasObjectOrDefault;
+            var ctor = type.FindConstructor(canCreate);
 
             var parameters = CreateParameters(ctor);
 
             var res = ctor.Invoke(parameters);
 
-            return res as T;
+            return res;
         }
 
-        internal bool HasObjectOrDefault(Type type)
+        private bool HasObjectOrDefault(Type type)
         {
             if (Objects.ContainsKey(type))
                 return true;
@@ -83,10 +87,24 @@ namespace MoqqerNamespace
             return false;
         }
 
+        private bool CanCreate(Type type)
+        {
+            if (HasObjectOrDefault(type))
+                return true;
+
+            if (!type.IsValueType && !typeof(Delegate).IsAssignableFrom(type))
+            {
+                Use(Create(type, true), type);
+                return true;
+            }
+
+            return false;
+        }
+
         [Obsolete("Use Create<T>(). Will be depreciated soon")]
         public T Get<T>() where T : class
         {
-            return Create<T>();
+            return Create<T>(false);
         }
 
         [Obsolete("")]
@@ -356,8 +374,11 @@ namespace MoqqerNamespace
 
         public IMoqqerObjectContext Use<T>(T implementation)
         {
-            var type = typeof(T);
+            return Use(implementation, typeof(T));
+        }
 
+        private IMoqqerObjectContext Use(object implementation, Type type)
+        {
             Objects[type] = implementation;
             return new MoqqerObjectContext(this, implementation, type);
         }
