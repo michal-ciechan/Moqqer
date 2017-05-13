@@ -41,4 +41,4 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("0.0.0.0")]
 [assembly: AssemblyFileVersion("0.0.0.0")]
-[assembly: InternalsVisibleTo("Moqqer.Tests")]
+[assembly: InternalsVisibleTo("Moqqer.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cd0d067a38aad4e86267ea8c2c8b84b8061153a4dd4a731e494f708b4f9abadefb202f751279ce3e42e9678917d67adc7ae60eb23a2f675cddbf88b06dd2b3f0209c3ea7b0d36d2120fb7e3d5fb220a36911848d8280a92786c1a93ac363238597025cbfe00caba50f526bd59c0c9e5ed260c77e8625c3a4bf419c4ca09de8f2")]
