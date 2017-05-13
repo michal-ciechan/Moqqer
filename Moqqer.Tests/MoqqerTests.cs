@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using Moq;
@@ -178,7 +177,7 @@ namespace MoqqerNamespace.Tests
         public void Object_ClassWithCtorContainingClassWithoutParameterlessCtor_ShouldThrowException()
         {
             TestDelegate action =
-                () => _moq.Object<ClassWithCtorContainingClassWithoutParameterlessCtor>();
+                () => _moq.Object<ClassWithCtorContainingClassWithParameterlessCtor>();
 
             Assert.That(action, Throws.TypeOf<MoqqerException>());
         }
@@ -285,6 +284,31 @@ namespace MoqqerNamespace.Tests
                 .And.BeSameAs(_moq.Object<List<string>>());
             res.StringQueryable.Should().NotBeNull()
                 .And.BeEquivalentTo(_moq.Object<List<string>>());
+        }
+
+        [Test]
+        public void Create_GeneratesInterfaceConstructorParameter()
+        {
+            var mock = _moq.Create<ClassWithCtorContainingClassWithoutParameterlessCtor>(true);
+
+            mock.CtorParam.A.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Create_GeneratesClassConstructorParameter()
+        {
+            var mock = _moq.Create<ClassWithCtorContainingClassWithParameterlessCtor>(true);
+
+            mock.CtorParam.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Create_ClassWith2Ctors1ContainingString()
+        {
+            var mock = _moq.Create<ClassWith2Ctors1ContainingString>(true);
+
+            mock.InterfaceParam.Should().NotBeNull();
+            mock.String.Should().NotBeNull();
         }
     }
 

@@ -72,6 +72,7 @@
     <Compile Include="TestClasses\Child.cs" />
     <Compile Include="TestClasses\ClassWith2Ctors1ContainingClassWithoutParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassWithCtorContainingClassWithoutParameterlessCtor.cs" />
+    <Compile Include="TestClasses\ClassWithCtorContainingClassWithParameterlessCtor.cs" />
     <Compile Include="TestClasses\ClassHavingParameterlessConcreteClass.cs" />
     <Compile Include="TestClasses\ClassWithDefaultMethods.cs" />
     <Compile Include="TestClasses\ClassWithFuncInCtor.cs" />
