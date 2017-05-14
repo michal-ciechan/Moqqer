@@ -24,6 +24,7 @@
 - [Installing](#installing)
 - [Roadmap](#roadmap)
 	- [Method Name Selection](#method-name-selection)
+- [Contributors](#contributors)
 
 <!-- /TOC -->
 

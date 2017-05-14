@@ -86,6 +86,15 @@ namespace MoqqerNamespace.Tests.README
         }
 
         [Test]
+        public void ConcreteClassInject_AutoGenrate_True()
+        {
+            var mock = _moq
+                .Create<ClassWithCtorContainingClassWithoutParameterlessCtor>(autogenerate: true);
+
+            mock.CtorParam.A.Should().NotBeNull();
+        }
+
+        [Test]
         public void QuickerVerification()
         {
             // Quickly Verify that a mock member was never called
