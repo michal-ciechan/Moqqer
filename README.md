@@ -55,11 +55,11 @@ _subject.CallA(); // Calls private field IDependencyA.Call()
 
 // 4 -  Verify a mock that was auto injected was called.
 _moq.Of<IDepencyA>()
-		.Verify(x => x.Call(), Times.Once);
+	.Verify(x => x.Call(), Times.Once);
 
 //      Alternatively use the Verify extension method
 _moq.Verify<IDepencyA>(x => x.Call())
-		.Once();
+	.Once();
 
 // 5 -  Test and Refactor to your hearts content
 //      without worrying about changing the constructor calls!
@@ -94,7 +94,7 @@ public class IntroExampleTests
         _subject.CallA(); // Calls private field IDependencyA.Call()
 
         _moq.Of<IDepencyA>()
-            .Verify(x => x.Call(), Times.Once);
+			.Verify(x => x.Call(), Times.Once);
     }
 }
 ```
@@ -128,6 +128,22 @@ var classObject = subject.Class;
 var moqedObject = _moq.Object<ParameterlessClass>();
 
 classObject.Should().BeSameAs(moqedObject);
+```
+
+The default constructor requirement can be overriding the `autogenerate` option when calling `Moq.Creat<T>`:
+
+```csharp
+Moqqer.Create<T>(bool autogenerate = false)
+```
+
+
+E.g.
+
+```csharp
+var mock = _moq
+	.Create<ClassWithCtorContainingClassWithoutParameterlessCtor>(autogenerate: true);
+
+mock.CtorParam.A.Should().NotBeNull();
 ```
 
 ## Default Object Injection
@@ -173,7 +189,7 @@ ctx.Leaves.Should().HaveCount(1);
 ctx.Leaves.First().Should().BeSameAs(item);
 ctx.Leaves.Should().BeSameAs(_moq.List<Leaf>());
 ctx.Leaves.Where(x => x.Age == 25)
-		.Should().HaveCount(1);
+	.Should().HaveCount(1);
 ```
 
 ## `IQueryable<T>` Null Guarding
@@ -344,8 +360,6 @@ https://www.nuget.org/packages/MoqInjectionContainer/
 
 # Roadmap
 
-
-
 ## Method Name Selection
 
 When you don't want to provide `It.IsAny<T>` for methods, you can provide a method name and let Moqqer use reflection.
@@ -357,3 +371,9 @@ _moq.Setup(nameof(_root.Tree)).Returns(new Tree());
 // Verify
 _moq.Verify(nameof(_root.Tree)).Once();
 ```
+
+# Contributors
+
+Special thanks to following contributors:
+
+Zoltan Rajnai ([zrajnai](https://github.com/zrajnai))

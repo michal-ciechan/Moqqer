@@ -289,7 +289,8 @@ namespace MoqqerNamespace.Tests
         [Test]
         public void Create_GeneratesInterfaceConstructorParameter()
         {
-            var mock = _moq.Create<ClassWithCtorContainingClassWithoutParameterlessCtor>(true);
+            var mock = _moq
+                .Create<ClassWithCtorContainingClassWithoutParameterlessCtor>(autogenerate: true);
 
             mock.CtorParam.A.Should().NotBeNull();
         }
