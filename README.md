@@ -18,6 +18,7 @@
 	- [Quicker Verification:](#quicker-verification)
 	- [Concrete Implementation](#concrete-implementation)
 	- [List](#list)
+	- [Factory Method](#factory-method)
 - [Moq Extensions](#moq-extensions)
 - [Default Mocks](#default-mocks)
 - [Func<T> Resolution](#funct-resolution)
@@ -330,6 +331,12 @@ _moq.Add(item);
 _moq.Of<IContext>()
     .Object.Leaves.Should().HaveCount(2);
 ```
+
+## Factory Method
+
+In case you want to inject different instances into as mocks, or different implementations, you can setup Moqqer with a factory method for a given type and return any specific instance according to the context such as the following:
+
+
 
 
 # Moq Extensions

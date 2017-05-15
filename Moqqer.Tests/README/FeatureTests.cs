@@ -248,5 +248,32 @@ namespace MoqqerNamespace.Tests.README
             _moq.Of<IContext>()
                 .Object.Leaves.Should().HaveCount(2);
         }
+
+        [Test]
+        public void FactoryMethod()
+        {
+            // Create custom leaf
+            var customLeaf = new Leaf(25);
+            
+            // Register factory function
+            _moq.Factory<ILeaf>(context =>
+                context.CallType == CallType.Constructor
+                    ? customLeaf // Returned when being injected into constructor
+                    : context.Default // All other times
+            );
+            
+            // Get instance of Branch
+            var branch = _moq.Create<Branch>();
+
+            // Its leaf you should custom leaf
+            branch.Leaf.Should().BeSameAs(customLeaf);
+            branch.Leaf.Age.Should().Be(25);
+            
+            // Get an instance of tree
+            var tree = _moq.Create<Tree>();
+
+            // Indirector (non Ctor injection) will be default
+            tree.Branch.Leaf.Should().NotBeSameAs(customLeaf);
+        }
     }
 }

@@ -2,11 +2,19 @@
 {
     class Branch : IBranch
     {
-        public Branch(int numberOfLeaves)
+        public Branch(ILeaf leaf)
         {
-            NumberOfLeaves = numberOfLeaves;
+            Leaf = leaf;
         }
         public int NumberOfLeaves { get; }
         public ILeaf Leaf { get; }
+        public ILeaf GetLeaf()
+        {
+            return Leaf;
+        }
+        public ILeaf GetLeaf(int arg)
+        {
+            return Leaf;
+        }
     }
 }

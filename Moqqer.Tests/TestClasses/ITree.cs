@@ -1,19 +1,22 @@
-using System;
-
 namespace MoqqerNamespace.Tests.TestClasses
 {
     public interface ITree
     {
         IBranch Branch { get; }
+        IBranch GetBranch();
     }
 
-    public class LeafFactory
+    class Tree : ITree
     {
-        public Func<ILeaf> CreateLeaf { get; }
-
-        public LeafFactory(Func<ILeaf> createLeaf)
+        public Tree(IBranch branch)
         {
-            CreateLeaf = createLeaf;
+            Branch = branch;
+        }
+
+        public IBranch Branch { get; }
+        public IBranch GetBranch()
+        {
+            return Branch;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using Moq;
 using MoqqerNamespace.DefaultFactories;
@@ -29,8 +30,10 @@ namespace MoqqerNamespace
 
         internal static readonly MethodInfo GetInstanceGenericMethod;
         internal static readonly MethodInfo GetInstanceFuncGenericMethod;
+        internal static readonly MethodInfo MoqItIsAnyGenericMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
+        internal readonly Dictionary<Type, IFactory> Factories = new Dictionary<Type, IFactory>();
 
         public bool UseMoqqerEnumerableQuery { get; set; } = true;
 
@@ -54,6 +57,7 @@ namespace MoqqerNamespace
             
             GetInstanceGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstance));
             GetInstanceFuncGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstanceFunc));
+            MoqItIsAnyGenericMethod = typeof(It).GetMethod("IsAny");
         }
 
         public T Create<T>(bool autogenerate = false) where T : class
@@ -63,7 +67,10 @@ namespace MoqqerNamespace
 
         private object Create(Type type, bool autogenerate)
         {
-            var canCreate = autogenerate ? (Predicate<Type>)CanCreate : HasObjectOrDefault;
+            var canCreate = autogenerate
+                ? (Predicate<Type>) CanCreate
+                : HasObjectOrDefault;
+
             var ctor = type.FindConstructor(canCreate);
 
             var parameters = CreateParameters(ctor);
@@ -234,7 +241,7 @@ namespace MoqqerNamespace
             {
                 var type = parameters[i].ParameterType;
 
-                res[i] = GetParameter(type);
+                res[i] = GetParameter(type, ctor);
             }
 
             return res;
@@ -245,7 +252,7 @@ namespace MoqqerNamespace
             return (T) GetInstance(typeof(T));
         }
 
-        private object GetInstanceFunc(Type type)
+        private object GetInstanceFunc(Type type, ConstructorInfo ctor)
         {
             if(!type.IsGenericType)
                 throw new Exception("Cannot get an instnace of a Func<T> because paramter 'type' is ot of Func<T>");
@@ -256,6 +263,8 @@ namespace MoqqerNamespace
                 throw new Exception("type has too many generic arguments! Can only provide closed Func<T> as type param");
 
             var returnType = genericArgs[0];
+
+            // TODO: Create func to call factory if exists for return type
 
             var getFuncMethod = GetInstanceFuncGenericMethod.MakeGenericMethod(returnType);
 
@@ -280,12 +289,16 @@ namespace MoqqerNamespace
             return Object(type);
         }
 
-        internal object GetParameter(Type type)
+        internal object GetParameter(Type type, ConstructorInfo ctor)
         {
-            if (type.IsFunc())
-                return GetInstanceFunc(type);
+            var mocked = type.IsFunc()
+                ? GetInstanceFunc(type, ctor)
+                : GetInstance(type);
 
-            return GetInstance(type);
+            if (!Factories.TryGetValue(type, out IFactory factory))
+                return mocked;
+
+            return factory.GetConstructorParameter(type, ctor, mocked);
         }
 
         internal bool HasParameterlessCtor(Type type)
@@ -332,9 +345,6 @@ namespace MoqqerNamespace
             var mockSetupFuncMethod = mockType.GetMethods()
                 .Single(x => x.Name == "Setup" && x.ContainsGenericParameters);
 
-            var itType = typeof(It);
-            var isAnyMethod = itType.GetMethod("IsAny");
-
             var inputParameter = Expression.Parameter(type, "x"); // Moqqer Lambda Param
 
             foreach (var method in methods)
@@ -347,7 +357,7 @@ namespace MoqqerNamespace
 
                 var parameters = method.GetParameters();
                 var args =
-                    parameters.Select(x => (Expression) Expression.Call(isAnyMethod.MakeGenericMethod(x.ParameterType)))
+                    parameters.Select(x => (Expression) Expression.Call(MoqItIsAnyGenericMethod.MakeGenericMethod(x.ParameterType)))
                         .ToArray();
 
                 var reflectedExpression = Expression.Call(inputParameter, method, args);
@@ -361,15 +371,156 @@ namespace MoqqerNamespace
 
                 var funcType = typeof(Func<>).MakeGenericType(method.ReturnType);
 
-                var delgate = Delegate.CreateDelegate(funcType, this,
-                    GetInstanceGenericMethod.MakeGenericMethod(method.ReturnType));
-
                 var setupType = setup.GetType();
+                
+                var instanceFunc = GetInstanceFunc(funcType, method);
 
-                var returnsMethod = setupType.GetMethod("Returns", new[] {funcType});
+                if (HasFactoryFor(method.ReturnType))
+                {
+                    var returnsMethod = GetMoqReturnsMethod(method, setupType);
 
-                returnsMethod.Invoke(setup, new object[] {delgate});
+                    var returnDelegate = GetInstanceFactoryFunc(method, instanceFunc);
+
+                    returnsMethod.Invoke(setup, new[] {returnDelegate});
+                }
+                else
+                {
+                    var returnsMethod = setupType.GetMethod("Returns", new[] { funcType });
+
+                    returnsMethod.Invoke(setup, new object[] { instanceFunc });
+                }
             }
+        }
+
+        private static MethodInfo GetMoqReturnsMethod(MethodInfo method, Type setupType)
+        {
+            var length = method.GetParameters().Length;
+
+            if (length == 0)
+            {
+                var funcType = typeof(Func<>).MakeGenericType(method.ReturnType);
+
+                return setupType.GetMethod("Returns", new[] { funcType });
+            }
+
+            var returnsMethodOpenGeneric = setupType.GetMethods()
+                .FirstOrDefault(x => x.IsGenericMethod &&
+                                     x.Name == "Returns" &&
+                                     x.GetGenericArguments().Length == length);
+
+            var typeArguments = method.GetParameters().Select(x => x.ParameterType).ToArray();
+
+            var returnsMethodClosed = returnsMethodOpenGeneric.MakeGenericMethod(typeArguments);
+
+            return returnsMethodClosed;
+        }
+
+        private Delegate GetInstanceFunc(Type funcType, MethodInfo method)
+        {
+            return Delegate.CreateDelegate(funcType, this,
+                GetInstanceGenericMethod.MakeGenericMethod(method.ReturnType));
+        }
+
+        public bool HasFactoryFor(Type type)
+        {
+            return Factories.ContainsKey(type);
+        }
+
+        internal object GetInstanceFactoryFunc(MethodInfo method, Delegate instanceFunc)
+        {
+            if (!Factories.TryGetValue(method.ReturnType, out IFactory factory))
+                throw new MoqqerException(
+                    $"Could not get factory for creating instance for return type: {method.ReturnType} for method {method.Name} on type {method.DeclaringType}");
+            
+            // Factory Constant (for calling object GetMethodParameter(Type type, MethodInfo method, object[] args, object defaultMock);
+            var factoryExpr = Expression.Constant(factory);
+            var factoryMethod = factory.GetType().GetMethod(nameof(factory.GetMethodParameter));
+
+            // Declaring Type
+            var typeExpression = Expression.Constant(method.DeclaringType);
+
+            // Method
+            var calledMethodExpr = Expression.Constant(method);
+
+            // Arguments
+            var methodParams = method.GetParameters();
+
+            var methodParamExpressions = methodParams
+                .Select(x => Expression.Parameter(x.ParameterType))
+                .ToArray();
+
+            Expression[] methodParamConvertedExpressions = methodParamExpressions
+                .Select(x => (Expression)Expression.Convert(x, typeof(object)))
+                .ToArray();
+
+            var arrayExpr = Expression.NewArrayInit(typeof(object), methodParamConvertedExpressions);
+
+            // Default Mock
+            var defaultMockExpression = Expression.Call(Expression.Constant(instanceFunc.Target), instanceFunc.Method);
+
+            // Factory Call
+            var getMethodParameterExpression = Expression.Call(factoryExpr, factoryMethod, new Expression[]
+            {
+                typeExpression,
+                calledMethodExpr,
+                arrayExpr,
+                defaultMockExpression
+            });
+
+            var getMethodParamConvertedExpression = Expression.Convert(getMethodParameterExpression, method.ReturnType);
+
+            // Return method type
+            var delegateType = GetMethodCallFunc(method);
+
+
+            // Create Lambda
+            var lambda = Expression.Lambda(delegateType, getMethodParamConvertedExpression,
+                methodParamExpressions);
+
+            var compiled = lambda.Compile();
+
+            return compiled;
+        }
+
+        private Type GetMethodCallFunc(MethodInfo method)
+        {
+            var args = method.GetParameters();
+
+            var funcType = GetFuncWithArgCount(args.Length);
+
+            var genericArgs = args
+                .Select(x => x.ParameterType)
+                .Union(new[] {method.ReturnType})
+                .ToArray();
+
+            var delegateType = funcType.MakeGenericType(genericArgs);
+            return delegateType;
+        }
+
+        public Type GetFuncWithArgCount(int genericInputParamLength)
+        {
+            switch (genericInputParamLength)
+            {
+                case 0: return typeof(Func<>);
+                case 1: return typeof(Func<,>);
+                case 2: return typeof(Func<,,>);
+                case 3: return typeof(Func<,,,>);
+                case 4: return typeof(Func<,,,,>);
+                case 5: return typeof(Func<,,,,,>);
+                case 6: return typeof(Func<,,,,,,>);
+                case 7: return typeof(Func<,,,,,,,>);
+                case 8: return typeof(Func<,,,,,,,,>);
+                case 9: return typeof(Func<,,,,,,,,,>);
+                case 10: return typeof(Func<,,,,,,,,,,>);
+                case 11: return typeof(Func<,,,,,,,,,,,>);
+                case 12: return typeof(Func<,,,,,,,,,,,,>);
+                case 13: return typeof(Func<,,,,,,,,,,,,,>);
+                case 14: return typeof(Func<,,,,,,,,,,,,,,>);
+                case 15: return typeof(Func<,,,,,,,,,,,,,,,>);
+                case 16: return typeof(Func<,,,,,,,,,,,,,,,,>);
+                default: throw new MoqqerException("Unsopported number of arguments in method");
+            }
+
         }
 
         public IMoqqerObjectContext Use<T>(T implementation)
@@ -381,6 +532,13 @@ namespace MoqqerNamespace
         {
             Objects[type] = implementation;
             return new MoqqerObjectContext(this, implementation, type);
+        }
+
+        public void Factory<T>(Func<CallContext<T>, T> factoryFunction)
+        {
+            var factory = new Factory<T>(factoryFunction);
+
+            Factories[typeof(T)] = factory;
         }
     }
 }

@@ -3,5 +3,6 @@
     public interface ILeaf
     {
         void Grow();
+        int Age { get; set; }
     }
 }

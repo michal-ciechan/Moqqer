@@ -6,5 +6,7 @@ namespace MoqqerNamespace.Tests.TestClasses
     {
         int NumberOfLeaves { get; }
         ILeaf Leaf { get; }
+        ILeaf GetLeaf();
+        ILeaf GetLeaf(int arg);
     }
 }

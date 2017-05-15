@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CallContext.cs" />
     <Compile Include="DefaultFactories\BaseGenericDefaultFactory.cs" />
     <Compile Include="DefaultFactories\IDefaultFactory.cs" />
     <Compile Include="DefaultFactories\ListDefaultFactory.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Extensions\MoqFluentVerifyBuilder.cs" />
     <Compile Include="Extensions\MoqqerExtensions.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
+    <Compile Include="Factory.cs" />
     <Compile Include="Helpers\TaskHelper.cs" />
     <Compile Include="IMoqqerObjectContext.cs" />
     <Compile Include="MoqFactory.cs" />

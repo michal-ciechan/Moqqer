@@ -311,6 +311,65 @@ namespace MoqqerNamespace.Tests
             mock.InterfaceParam.Should().NotBeNull();
             mock.String.Should().NotBeNull();
         }
+
+        [Test]
+        public void Factory_For_ConstructorCallOnly_OnlyConstructorInjectedReturnsCustom()
+        {
+            // Create custom leaf
+            var customLeaf = new Leaf(25);
+
+            // Register factory function
+            _moq.Factory<ILeaf>(context =>
+                    context.CallType == CallType.Constructor
+                        ? customLeaf // Returned when being injected into constructor
+                        : context.Default // All other times
+            );
+
+            // Get instance of Branch
+            var branch = _moq.Create<Branch>();
+
+            // Its leaf you should custom leaf
+            branch.Leaf.Should().BeSameAs(customLeaf);
+            branch.Leaf.Age.Should().Be(25);
+
+            // Get an instance of tree
+            var tree = _moq.Create<Tree>();
+
+            // Indirector (non Ctor injection) will be default
+            tree.Branch.Leaf.Should().NotBeSameAs(customLeaf);
+            tree.Branch.GetLeaf().Should().NotBeSameAs(customLeaf);
+            tree.Branch.GetLeaf(3).Should().NotBeSameAs(customLeaf);
+        }
+
+        [Test]
+        public void Factory_For_MethodCallOnly_OnlyMockedMethodCallsReturnCustom()
+        {
+            var customLeaf = new Leaf(25);
+            
+            _moq.Factory<ILeaf>(context =>
+                    context.CallType == CallType.Method && context.Arg<int>() == 25
+                        ? customLeaf
+                        : context.Default
+            );
+
+
+            var tree = _moq.Create<Tree>();
+
+            tree.Branch.GetLeaf(25).Should()
+                .BeSameAs(customLeaf);
+
+            tree.Branch.Leaf.Should()
+                .NotBeSameAs(customLeaf);
+
+            tree.Branch.GetLeaf().Should()
+                .NotBeSameAs(customLeaf);
+
+            tree.Branch.GetLeaf(4).Should()
+                .NotBeSameAs(customLeaf);
+
+            _moq.Create<Branch>().Leaf.Should()
+                .NotBeSameAs(customLeaf);
+        }
     }
 
 

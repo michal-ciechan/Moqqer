@@ -105,6 +105,7 @@
     <Compile Include="TestClasses\IMockSetup.cs" />
     <Compile Include="TestClasses\IInterfaceWithGenericMethod.cs" />
     <Compile Include="TestClasses\IParameterisedMethodClass.cs" />
+    <Compile Include="TestClasses\LeafFactory.cs" />
     <Compile Include="TestClasses\Parent.cs" />
     <Compile Include="TestClasses\Root.cs" />
     <Compile Include="TestClasses\School.cs" />
