@@ -334,7 +334,7 @@ _moq.Of<IContext>()
 
 ## Factory Method
 
-In case you want to inject different instances into as mocks, or different implementations, you can setup Moqqer with a factory method for a given type and return any specific instance according to the context such as the following:
+In case you want to inject different instances of mocks, or different implementations, you can setup `Moqqer` with a factory method for a given type and return any specific instance according to the context such as the following:
 
 ```csharp
 // Create custom leaf
