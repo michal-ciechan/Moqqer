@@ -387,9 +387,9 @@ Moqqer by default will resolve any `Func<T>` to `Func<Mock<T>.Object>` if `T` is
 
 # Installing
 
-Find it on NuGet under MoqInjectionContainer
+Find it on NuGet under Moqqer
 
-https://www.nuget.org/packages/MoqInjectionContainer/
+https://www.nuget.org/packages/Moqqer/
 
 # Roadmap
 
