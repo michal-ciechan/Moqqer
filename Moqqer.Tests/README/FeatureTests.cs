@@ -255,25 +255,27 @@ namespace MoqqerNamespace.Tests.README
             // Create custom leaf
             var customLeaf = new Leaf(25);
             
-            // Register factory function
+            // Register ILeaf factory function
             _moq.Factory<ILeaf>(context =>
                 context.CallType == CallType.Constructor
-                    ? customLeaf // Returned when being injected into constructor
-                    : context.Default // All other times
+                    ? customLeaf // For Ctor injection return custom leaf
+                    : context.Default // Otherwise return default Mock
             );
             
-            // Get instance of Branch
+            // Get instance of Branch (has ILeaf in Ctor)
             var branch = _moq.Create<Branch>();
 
-            // Its leaf you should custom leaf
+            // Its ILeaf should be same as custom leaf
             branch.Leaf.Should().BeSameAs(customLeaf);
             branch.Leaf.Age.Should().Be(25);
             
             // Get an instance of tree
             var tree = _moq.Create<Tree>();
 
-            // Indirector (non Ctor injection) will be default
+            // Indirect (non Ctor injection) should be default mock
             tree.Branch.Leaf.Should().NotBeSameAs(customLeaf);
+
+            tree.Branch.Leaf.Should().BeSameAs(_moq.Of<ILeaf>().Object);
         }
     }
 }

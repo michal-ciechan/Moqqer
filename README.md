@@ -336,7 +336,32 @@ _moq.Of<IContext>()
 
 In case you want to inject different instances into as mocks, or different implementations, you can setup Moqqer with a factory method for a given type and return any specific instance according to the context such as the following:
 
+```csharp
+// Create custom leaf
+var customLeaf = new Leaf(25);
 
+// Register ILeaf factory function
+_moq.Factory<ILeaf>(context =>
+	context.CallType == CallType.Constructor
+        ? customLeaf // For Ctor injection return custom leaf
+        : context.Default // Otherwise return default Mock
+);
+
+// Get instance of Branch (has ILeaf in Ctor)
+var branch = _moq.Create<Branch>();
+
+// Its ILeaf should be same as custom leaf
+branch.Leaf.Should().BeSameAs(customLeaf);
+branch.Leaf.Age.Should().Be(25);
+
+// Get an instance of tree
+var tree = _moq.Create<Tree>();
+
+// Indirect (non Ctor injection) should be default mock
+tree.Branch.Leaf.Should().NotBeSameAs(customLeaf);
+
+tree.Branch.Leaf.Should().BeSameAs(_moq.Of<ILeaf>().Object);
+```
 
 
 # Moq Extensions
@@ -382,6 +407,6 @@ _moq.Verify(nameof(_root.Tree)).Once();
 
 # Contributors
 
-Special thanks to following contributors:
+Special thanks to the following contributors:
 
 Zoltan Rajnai ([zrajnai](https://github.com/zrajnai))
