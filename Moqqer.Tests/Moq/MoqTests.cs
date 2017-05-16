@@ -77,71 +77,9 @@ namespace MoqqerNamespace.Tests.Moq
             //    return asQueryable;
             //});
 
-
             var res = mock.Object.Queryable<StringCtor>();
             
             res.Should().NotBeNull();
-        }
-
-        [Test]
-        public void Moq_SetupReturnsCallback()
-        {
-            var mock = new Mock<IBranch>();
-
-            var call = new CallContext<ILeaf>()
-            {
-                Arguments = new object[1],
-                CallType = CallType.Method
-            };
-
-            var leaf = new Leaf(88);
-
-            var factory = new Factory<ILeaf>(context => leaf);
-
-            var factoryExpr = Expression.Constant(factory);
-
-            var method = factory.GetType().GetMethod(nameof(factory.GetMethodParameter));
-
-            var typeExpression = Expression.Constant(typeof(Branch));
-            var calledMethod = typeof(Branch).GetMethod(nameof(Branch.GetLeaf), new[] { typeof(int) });
-            var calledMethodExpr = Expression.Constant(calledMethod);
-
-            var methodParams = calledMethod.GetParameters();
-
-            var methodParamExpressions = methodParams
-                .Select(x => Expression.Parameter(x.ParameterType))
-                .ToArray();
-
-            Expression[] methodParamConvertedExpressions = methodParamExpressions
-                .Select(x => Expression.Convert(x, typeof(object)))
-                .ToArray();
-
-            var array = Expression.NewArrayInit(typeof(object), methodParamConvertedExpressions);
-
-            var defaultMockExpression = Expression.Constant(new Mock<ILeaf>().Object);
-
-            var getMethodParameterExpression = Expression.Call(factoryExpr, method, new Expression[]
-            {
-                typeExpression,
-                calledMethodExpr,
-                array,
-                defaultMockExpression
-            });
-
-            var delegateType = typeof(Func<int, string, int, object, ILeaf>);
-
-            var getMethodParamConvertedExpression = Expression.Convert(getMethodParameterExpression, typeof(ILeaf));
-
-            var lambda = Expression.Lambda(delegateType, getMethodParamConvertedExpression,
-                methodParamExpressions);
-
-            var lambdaFunc = (Func<int, string, int, object, ILeaf>)lambda.Compile();
-
-            var res = lambdaFunc(1, "Test", 2, null);
-
-            //var functionCallExpr = Expression.Call(factoryExpr, method, callExpr);
-
-            mock.Setup(x => x.GetLeaf(It.IsAny<int>())).Returns(() => new Leaf());
         }
     }
 }
