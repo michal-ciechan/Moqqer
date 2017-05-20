@@ -37,7 +37,7 @@ It automatically injects mocks into the constructor of a class and lets you retr
 
 This helps to ease the pain of creating mocks each time, as well as time saving when you change the constructors or refactor code.
 
-Moqqer also automatically stubs methods of an interface to return Mocks of the return type or some defaults (where applicable). See the section on default Mock value below for more info.
+Moqqer also automatically stubs methods of an interface to return Mocks of the return type or some defaults (where applicable). See the section on [Default Mocks](#default-mocks) below for more info.
 
 Moqqer provides a custom `IEnumerable.AsQueryable` implemention which `null` guards each expression to make sure empty object graphs do not cause `NullReferenceException` as when using EF/Linq2Sql this would be handled gracefully.
 

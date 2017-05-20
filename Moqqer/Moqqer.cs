@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.Remoting.Channels;
 using System.Threading.Tasks;
 using Moq;
 using MoqqerNamespace.DefaultFactories;
@@ -111,7 +110,7 @@ namespace MoqqerNamespace
         [Obsolete("Use Create<T>(). Will be depreciated soon")]
         public T Get<T>() where T : class
         {
-            return Create<T>(false);
+            return Create<T>();
         }
 
         [Obsolete("")]
@@ -252,7 +251,7 @@ namespace MoqqerNamespace
             return (T) GetInstance(typeof(T));
         }
 
-        private object GetInstanceFunc(Type type, ConstructorInfo ctor)
+        private object GetInstanceFunc(Type type)
         {
             if(!type.IsGenericType)
                 throw new Exception("Cannot get an instnace of a Func<T> because paramter 'type' is ot of Func<T>");
@@ -292,7 +291,7 @@ namespace MoqqerNamespace
         internal object GetParameter(Type type, ConstructorInfo ctor)
         {
             var mocked = type.IsFunc()
-                ? GetInstanceFunc(type, ctor)
+                ? GetInstanceFunc(type)
                 : GetInstance(type);
 
             if (!Factories.TryGetValue(type, out IFactory factory))
@@ -377,8 +376,10 @@ namespace MoqqerNamespace
 
                 if (HasFactoryFor(method.ReturnType))
                 {
+                    // Moq.Returns<TArg1,TArg2,...,T>(Func<TArg1, TArg2..., T> func)
                     var returnsMethod = GetMoqReturnsMethod(method, setupType);
 
+                    // Func<TArg1, TArg2..., T>
                     var returnDelegate = GetInstanceFactoryFunc(method, instanceFunc);
 
                     returnsMethod.Invoke(setup, new[] {returnDelegate});
@@ -407,6 +408,9 @@ namespace MoqqerNamespace
                 .FirstOrDefault(x => x.IsGenericMethod &&
                                      x.Name == "Returns" &&
                                      x.GetGenericArguments().Length == length);
+
+            if(returnsMethodOpenGeneric == null)
+                throw new MoqqerException($"Could not find Moq.Returns method for {setupType} containing {length} generic arguments");
 
             var typeArguments = method.GetParameters().Select(x => x.ParameterType).ToArray();
 

@@ -34,10 +34,10 @@ namespace MoqqerNamespace
         public CallType CallType { get; internal set; }
         public ConstructorInfo Constructor { get; set; }
 
-        public TArg Arg<TArg>(TArg defaultReturn = default(TArg))
+        public TArg Arg<TArg>(TArg resultIfMissing = default(TArg))
         {
             if (Arguments == null)
-                return defaultReturn;
+                return resultIfMissing;
 
             foreach (var argument in Arguments)
             {
@@ -45,7 +45,7 @@ namespace MoqqerNamespace
                     return (TArg)argument;
             }
 
-            return defaultReturn;
+            return resultIfMissing;
         }
 
         public TArg Arg<TArg>(int argIndex, TArg defaultReturn = default(TArg))

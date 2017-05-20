@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using MoqqerNamespace.Helpers;
 
 namespace MoqqerNamespace
 {
@@ -29,9 +30,11 @@ namespace MoqqerNamespace
 
         public object GetMethodParameter(Type type, MethodInfo method, object[] args, object defaultMock)
         {
-            var context = new CallContext<T>()
+            var context = new CallContext<T>
             {
-                CallType = CallType.Method,
+                CallType = method.IsPropertyGetter()
+                    ? CallType.Property
+                    : CallType.Method,
                 ParentClass = type,
                 Default = (T) defaultMock,
                 Method = method,

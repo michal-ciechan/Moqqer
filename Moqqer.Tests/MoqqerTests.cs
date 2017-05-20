@@ -370,6 +370,36 @@ namespace MoqqerNamespace.Tests
             _moq.Create<Branch>().Leaf.Should()
                 .NotBeSameAs(customLeaf);
         }
+
+        [Test]
+        public void Factory_For_PropertyCallOnly_OnlyMockedMethodCallsReturnCustom()
+        {
+            var customLeaf = new Leaf(25);
+            
+            _moq.Factory<ILeaf>(context =>
+                    context.CallType == CallType.Property
+                        ? customLeaf
+                        : context.Default
+            );
+
+
+            var tree = _moq.Create<Tree>();
+
+            tree.Branch.Leaf.Should()
+                .BeSameAs(customLeaf);
+
+            tree.Branch.GetLeaf().Should()
+                .NotBeSameAs(customLeaf);
+
+            tree.Branch.GetLeaf(0).Should()
+                .NotBeSameAs(customLeaf);
+
+            tree.Branch.GetLeaf(25).Should()
+                .NotBeSameAs(customLeaf);
+
+            _moq.Create<Branch>().Leaf.Should()
+                .NotBeSameAs(customLeaf);
+        }
     }
 
 
