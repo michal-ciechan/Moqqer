@@ -400,6 +400,17 @@ namespace MoqqerNamespace.Tests
             _moq.Create<Branch>().Leaf.Should()
                 .NotBeSameAs(customLeaf);
         }
+
+        [Test]
+        public void Create_MockConcreteReturnTypes_MockedInterfaceWithConcreteClassProperty()
+        {
+            _moq.MockConcreteReturnTypes = true;
+
+            var tree = _moq.Create<Tree>(true);
+
+            tree.Branch.ConcreteLeaf.Should()
+                .NotBeNull();
+        }
     }
 
 

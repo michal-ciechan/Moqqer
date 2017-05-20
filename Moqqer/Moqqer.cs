@@ -27,14 +27,15 @@ namespace MoqqerNamespace
             set => MoqqerExpressionRewriter.ThrowOnNonNullableReferenceTypeSelection = value;
         }
 
-        internal static readonly MethodInfo GetInstanceGenericMethod;
-        internal static readonly MethodInfo GetInstanceFuncGenericMethod;
-        internal static readonly MethodInfo MoqItIsAnyGenericMethod;
+        private static readonly MethodInfo GetInstanceGenericMethod;
+        private static readonly MethodInfo GetInstanceFuncGenericMethod;
+        private static readonly MethodInfo MoqItIsAnyGenericMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
         internal readonly Dictionary<Type, IFactory> Factories = new Dictionary<Type, IFactory>();
 
         public bool UseMoqqerEnumerableQuery { get; set; } = true;
+        public bool MockConcreteReturnTypes { get; set; }
 
         public Moqqer()
         {
@@ -335,7 +336,11 @@ namespace MoqqerNamespace
 
         internal void SetupMockMethods(Mock mock, Type type)
         {
-            var methods = type.GetMockableMethods(HasObjectOrDefault).ToList();
+            var canCreate = MockConcreteReturnTypes
+                ? (Predicate<Type>)CanCreate
+                : HasObjectOrDefault;
+
+            var methods = type.GetMockableMethods(canCreate).ToList();
 
             if (!methods.Any()) return;
 
@@ -421,8 +426,10 @@ namespace MoqqerNamespace
 
         private Delegate GetInstanceFunc(Type funcType, MethodInfo method)
         {
-            return Delegate.CreateDelegate(funcType, this,
+            var instanceFunc = Delegate.CreateDelegate(funcType, this,
                 GetInstanceGenericMethod.MakeGenericMethod(method.ReturnType));
+
+            return instanceFunc;
         }
 
         public bool HasFactoryFor(Type type)
@@ -453,7 +460,7 @@ namespace MoqqerNamespace
                 .Select(x => Expression.Parameter(x.ParameterType))
                 .ToArray();
 
-            Expression[] methodParamConvertedExpressions = methodParamExpressions
+            var methodParamConvertedExpressions = methodParamExpressions
                 .Select(x => (Expression)Expression.Convert(x, typeof(object)))
                 .ToArray();
 
@@ -501,7 +508,7 @@ namespace MoqqerNamespace
             return delegateType;
         }
 
-        public Type GetFuncWithArgCount(int genericInputParamLength)
+        private static Type GetFuncWithArgCount(int genericInputParamLength)
         {
             switch (genericInputParamLength)
             {

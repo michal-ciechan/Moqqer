@@ -35,10 +35,11 @@ namespace MoqqerNamespace.Helpers
                 .FlattenInheritance()
                 .SelectMany(x => x.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |  BindingFlags.FlattenHierarchy))
                 .Where(
-                    x => canInject(x.ReturnType) || x.ReturnType.IsInterface 
+                    x => x.ReturnType.IsInterface
                          && !x.IsGenericMethod 
                          && !x.IsGenericMethodDefinition 
-                         && x.IsVirtual);
+                         && x.IsVirtual
+                         || canInject(x.ReturnType));
         }
 
         public static ConstructorInfo FindConstructor(this Type type, Predicate<Type> canInject)

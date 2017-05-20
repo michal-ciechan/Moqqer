@@ -16,5 +16,7 @@
         {
             return Leaf;
         }
+
+        public Leaf ConcreteLeaf { get; }
     }
 }

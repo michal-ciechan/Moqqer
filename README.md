@@ -19,6 +19,7 @@
 	- [Concrete Implementation](#concrete-implementation)
 	- [List](#list)
 	- [Factory Method](#factory-method)
+	- [Mock Concrete Return Types](#mock-concrete-return-types)
 - [Moq Extensions](#moq-extensions)
 - [Default Mocks](#default-mocks)
 - [Func<T> Resolution](#funct-resolution)
@@ -324,12 +325,14 @@ var item = new Leaf(25);
 _moq.List<Leaf>()
     .Add(item);
 
-// Extension method to add T item to List<T>
+// Extension method to add items to List<T>
 _moq.Add(item);
+_moq.Add(item, item, item);
+_moq.AddItems(new List<Leaf>{ item, item, item });
 
-// Confirm List has 2 Items
+// Confirm List has 8 Items
 _moq.Of<IContext>()
-    .Object.Leaves.Should().HaveCount(2);
+    .Object.Leaves.Should().HaveCount(8);
 ```
 
 ## Factory Method
@@ -363,6 +366,21 @@ tree.Branch.Leaf.Should().NotBeSameAs(customLeaf);
 tree.Branch.Leaf.Should().BeSameAs(_moq.Of<ILeaf>().Object);
 ```
 
+## Mock Concrete Return Types
+
+When an interface has a Member that returns a Concrete type, it by default will not be mocked. You can override this by specifying `_moq.ConcreteReturnTypes = true` such as the following:
+
+```csharp
+// Tell moqqer to Mock members with concrete return types
+_moq.MockConcreteReturnTypes = true;
+
+// Get instance of Tree (has IBranch injected)
+var tree = _moq.Create<Tree>(true);
+
+// IBranch has a property that returns and concrete type Leaf
+tree.Branch.ConcreteLeaf.Should()
+    .NotBeNull();
+```
 
 # Moq Extensions
 
