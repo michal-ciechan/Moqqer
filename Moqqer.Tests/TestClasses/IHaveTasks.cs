@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace MoqqerNamespace.Tests.TestClasses
 {
@@ -8,5 +9,6 @@ namespace MoqqerNamespace.Tests.TestClasses
 
         Task<string> StringTask();
         Task<ILeaf> LeafTask();
+        Task<Tuple<string>> TupleTask();
     }
 }

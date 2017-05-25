@@ -7,7 +7,7 @@ namespace MoqqerNamespace.DefaultFactories
 {
     public interface IDefaultFactory
     {
-        bool CanHandle(Type type, Type openType, Type[] genericArguments);
+        bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments);
         object Create(Moqqer moq, Type type, Type openType, Type[] genericArguments);
     }
 }

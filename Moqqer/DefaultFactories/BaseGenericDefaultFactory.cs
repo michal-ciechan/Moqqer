@@ -9,7 +9,7 @@ namespace MoqqerNamespace.DefaultFactories
         public static readonly MethodInfo CreateGenericMethodInfo =
             typeof(BaseGenericDefaultFactory).GetGenericMethod("CreateGeneric");
 
-        public abstract bool CanHandle(Type type, Type openType, Type[] genericArguments);
+        public abstract bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments);
         public object Create(Moqqer moq, Type type, Type openType, Type[] genericArguments)
         {
             var meth = CreateGenericMethodInfo.MakeGenericMethod(genericArguments);

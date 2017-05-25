@@ -6,7 +6,7 @@ namespace MoqqerNamespace.DefaultFactories
 {
     class ListDefaultFactory : IDefaultFactory
     {
-        public bool CanHandle(Type type, Type openType, Type[] genericArguments)
+        public bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments)
         {
             return typeof(List<>)
                 .IsOpenGenericAssignableToOpenGenericType(openType);

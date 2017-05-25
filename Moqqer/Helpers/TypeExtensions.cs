@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace MoqqerNamespace.Helpers
 {
@@ -34,12 +37,25 @@ namespace MoqqerNamespace.Helpers
             return type
                 .FlattenInheritance()
                 .SelectMany(x => x.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |  BindingFlags.FlattenHierarchy))
-                .Where(
-                    x => x.ReturnType.IsInterface
-                         && !x.IsGenericMethod 
-                         && !x.IsGenericMethodDefinition 
-                         && x.IsVirtual
-                         || canInject(x.ReturnType));
+                .Where(x =>
+                {
+                    try
+                    {
+                        return x.IsMethodMockable() || canInject(x.ReturnType);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new MoqqerException($"Exception happened while trying to check if Method '{x.Describe()}' is Mockable. See inner exception for more details.", e);
+                    }
+                });
+        }
+
+        private static bool IsMethodMockable(this MethodInfo x)
+        {
+            return x.ReturnType.IsInterface
+                   && !x.IsGenericMethod 
+                   && !x.IsGenericMethodDefinition 
+                   && x.IsVirtual;
         }
 
         public static ConstructorInfo FindConstructor(this Type type, Predicate<Type> canInject)
@@ -54,7 +70,7 @@ namespace MoqqerNamespace.Helpers
                 .ToList();
 
             if (potentialCtors.Count == 0)
-                throw new MoqqerException($"Could not find any possible constructors for type: {type.Name}");
+                throw new MoqqerException($"Could not find any possible constructors for type: {type.Describe()}");
 
             return potentialCtors.OrderByDescending(x => x.GetParameters().Length).First();
 
@@ -76,6 +92,95 @@ namespace MoqqerNamespace.Helpers
             var returnType = type.GetGenericArguments().First();
 
             return returnType.IsInjectable(canInject);
+        }
+
+        public static string Describe(this Type type)
+        {
+            if (type == typeof(void)) return "void";
+            if (type == typeof(object)) return "object";
+            if (type == typeof(bool)) return "bool";
+            if (type == typeof(byte)) return "byte";
+            if (type == typeof(short)) return "short";
+            if (type == typeof(sbyte)) return "sbyte";
+            if (type == typeof(uint)) return "uint";
+            if (type == typeof(int)) return "int";
+            if (type == typeof(long)) return "long";
+            if (type == typeof(ulong)) return "ulong";
+            if (type == typeof(float)) return "float";
+            if (type == typeof(double)) return "double";
+            if (type == typeof(decimal)) return "decimal";
+            if (type == typeof(char)) return "char";
+            if (type == typeof(string)) return "string";
+
+            var sb = new StringBuilder();
+
+            if (type.IsArray)
+            {
+                var rank = type.GetArrayRank();
+
+                sb.Append(type.GetElementType().Describe());
+                sb.Append($"[{new string(',',rank-1)}]");
+            }
+            else
+            {
+                sb.Append(type.Name.CleanMemberName());
+            }
+
+            if (type.IsGenericType || type.IsGenericTypeDefinition)
+            {
+                sb.Append("<");
+                var args = type.GetGenericArguments();
+                sb.Append(string.Join(",", args.Select(x => x.Describe())));
+                sb.Append(">");
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Removes any `x args from Generic type names
+        /// </summary>
+        /// <returns></returns>
+        public static string CleanMemberName(this string name)
+        {
+            var genericArg = name.IndexOf("`", StringComparison.Ordinal);
+
+            if (genericArg <= 0)
+                return name;
+
+            return name.Substring(0, genericArg);
+        }
+
+        public static string Describe(this MethodInfo method)
+        {
+            var methParams = method.GetParameters();
+
+            var param = methParams.Length == 0
+                ? ""
+                : string.Join(", ", methParams.Select(x => x.Describe()));
+
+            var genericArg = method.IsGenericMethod || method.IsGenericMethodDefinition
+                ? $"<{string.Join(",",method.GetGenericArguments().Select(x => x.Describe()))}>"
+                : null;
+
+
+            return $"{method.ReturnType.Describe()} {method.Name.CleanMemberName()}{genericArg}({param})";
+        }
+
+        public static string Describe(this ConstructorInfo ctor)
+        {
+            var methParams = ctor.GetParameters();
+
+            var param = methParams.Length == 0
+                ? ""
+                : string.Join(", ", methParams.Select(x => x.Describe()));
+
+            return $"{ctor.DeclaringType.Describe()}({param})";
+        }
+
+        public static string Describe(this ParameterInfo param)
+        {
+            return $"{param.ParameterType.Describe()} {param.Name}";
         }
 
         internal static bool IsInjectable(this Type type, Predicate<Type> canInject)

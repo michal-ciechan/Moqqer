@@ -6,7 +6,7 @@ namespace MoqqerNamespace.DefaultFactories
 {
     class QueryableDefaultFactory : BaseGenericDefaultFactory
     {
-        public override bool CanHandle(Type type, Type openType, Type[] genericArguments)
+        public override bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments)
         {
             return openType == typeof(IQueryable<>);
         }

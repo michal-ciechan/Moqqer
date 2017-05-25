@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using FluentAssertions;
 using MoqqerNamespace.Helpers;
 using MoqqerNamespace.Tests.TestClasses;
@@ -146,6 +147,88 @@ namespace MoqqerNamespace.Tests.Helpers
 
             from.IsClosedGenericAssignableToOpenGenericType(typeof(Tuple<int>)).Should().BeFalse();
         }
+
+        [Test]
+        [TestCase(typeof(List<>), "List<T>")]
+        [TestCase(typeof(List<List<string>>), "List<List<string>>")]
+        [TestCase(typeof(List<string>), "List<string>")]
+        [TestCase(typeof(string), "string")]
+        [TestCase(typeof(object), "object")]
+        [TestCase(typeof(Tuple), "Tuple")]
+        [TestCase(typeof(Tuple<>), "Tuple<T1>")]
+        [TestCase(typeof(Tuple<,>), "Tuple<T1,T2>")]
+        [TestCase(typeof(Tuple<string,int>), "Tuple<string,int>")]
+        [TestCase(typeof(object[]), "object[]")]
+        [TestCase(typeof(object[][]), "object[][]")]
+        [TestCase(typeof(object[,]), "object[,]")]
+        [TestCase(typeof(Tuple<int,long>[]), "Tuple<int,long>[]")]
+        public void Type_Describe(Type type, string expectedDescription)
+        {
+            type.Describe().Should().Be(expectedDescription);
+        }
+
+        [Test]
+        public void MethodInfo_Describe()
+        {
+            var type = typeof(IAllMethodCombinations);
+
+            var count = type.GetMembers().Length;
+
+            for (int i = 0; i < count; i++)
+                RunMethod(i);
+        }
+
+        [Test]
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(4)]
+        [TestCase(5)]
+        [TestCase(6)]
+        [TestCase(7)]
+        [TestCase(8)]
+        public void RunMethod(int i)
+        {
+            var type = typeof(IAllMethodCombinations);
+
+            var meth = type.GetMethod("Method" + i);
+            var expected = methods[i];
+
+            var description = meth.Describe() + ";";
+
+            description.Should().Be(expected);
+        }
+
+        string[] methods = @"
+            void Method0();
+            Task<T> Method1<T>();
+            Tuple<T1,T2> Method2<T1,T2>();
+            TReturnType Method3<TReturnType>();
+            void Method4<TInputType>(TInputType type);
+            void Method5(int i, string b);
+            void Method6(Tuple<int,string> tuple, string b);
+            void Method7(Task<int> t, object a);
+            void Method8(object[] a);"
+        .Split('\r')
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToArray();
+
+        public interface IAllMethodCombinations
+        {
+            // OpenGenericMethods
+            void Method0();
+            Task<T> Method1<T>();
+            Tuple<T1,T2> Method2<T1,T2>();
+            TReturnType Method3<TReturnType>();
+            void Method4<TInputType>(TInputType type);
+            void Method5(int i, string b);
+            void Method6(Tuple<int,string> tuple, string b);
+            void Method7(Task<int> t, object a);
+            void Method8(object[] a);
+        }
+        
 
     }
 }

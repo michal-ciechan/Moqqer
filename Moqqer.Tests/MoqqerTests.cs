@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MoqqerNamespace.Tests.TestClasses;
@@ -90,6 +91,22 @@ namespace MoqqerNamespace.Tests
 
             task.Should().NotBeNull();
             task.IsCompleted.Should().BeTrue();
+        }
+
+        /// <summary>
+        ///     Issue #15
+        /// </summary>
+        [Test]
+        public void Of_IHaveTasks_Mocks_TupleTask_Method_ReturnsCompletedTaskWithDefaultTuple()
+        {
+            var res = _moq.Of<IHaveTasks>().Object;
+
+            var task = res.TupleTask();
+
+            task.Should().NotBeNull();
+            task.IsCompleted.Should().BeTrue();
+
+            task.Result.Should().Be(default(Tuple<string>));
         }
 
         /// <summary>
@@ -257,6 +274,27 @@ namespace MoqqerNamespace.Tests
             _moq.SetupMockMethods(mock, type);
 
             mock.Object.GetA().Should().NotBeNull();
+        }
+
+        [Test]
+        public void HasObjectOrDefault_TupleTask_ShouldBeCompleteTaskWithDefault()
+        {
+            _moq.HasObjectOrDefault(typeof(Task<Tuple<string>>)).Should().BeFalse();
+        }
+
+        [Test]
+        public void GetInstance_Tuple_ShouldBeCompleteTaskWithDefault()
+        {
+            Action act = () => _moq.GetInstance<Tuple<string>>();
+
+            act.ShouldThrow<MoqqerException>().Which.Message.Should()
+                .Contain("Cannot get Type('Tuple<string>') as it does not have a default constructor.");
+        }
+
+        [Test]
+        public void CanCreate_Tuple_ShouldBeCompleteTaskWithDefault()
+        {
+            _moq.CanCreate(typeof(Tuple<string>)).Should().BeTrue();
         }
 
         [Test]

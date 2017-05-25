@@ -62,7 +62,14 @@ namespace MoqqerNamespace
 
         public T Create<T>(bool autogenerate = false) where T : class
         {
-            return Create(typeof(T), autogenerate) as T;
+            try
+            {
+                return Create(typeof(T), autogenerate) as T;
+            }
+            catch (Exception e)
+            {
+                throw new MoqqerException($"Exception happened while trying to 'Create<{typeof(T).Describe()}>()'. See Inner exception for more details", e);
+            }
         }
 
         private object Create(Type type, bool autogenerate)
@@ -80,7 +87,7 @@ namespace MoqqerNamespace
             return res;
         }
 
-        private bool HasObjectOrDefault(Type type)
+        internal bool HasObjectOrDefault(Type type)
         {
             if (Objects.ContainsKey(type))
                 return true;
@@ -94,7 +101,7 @@ namespace MoqqerNamespace
             return false;
         }
 
-        private bool CanCreate(Type type)
+        internal bool CanCreate(Type type)
         {
             if (HasObjectOrDefault(type))
                 return true;
@@ -133,12 +140,17 @@ namespace MoqqerNamespace
             if (def != null) return def;
 
             if (type.IsMockable())
-                throw new MoqqerException($"Type('{type.Name}')  is mockable. Use Create<T>() if you are looking to create an object with injection of mocks/objects. Or Use the Of<T>() if you want to retrieve a mock of that type which was/will be injected.");
+                throw new MoqqerException($"Type('{type.Describe()}')  is mockable. " +
+                                          $"Use Create<T>() if you are looking to create an object with injection of mocks/objects. " +
+                                          $"Or Use the Of<T>() if you want to retrieve a mock of that type which was/will be injected.");
             
             var ctor = type.GetDefaultCtor();
 
             if (ctor == null)
-                throw new MoqqerException($"Cannot get Type('{type.Name}') as it does not have a default constructor. If you meant to create an object with injection into the Ctor use Create<T>()");
+                throw new MoqqerException($"Cannot get Type('{type.Describe()}') as it does not have a default constructor. " +
+                                          $"If you meant to create an object with injection into the Ctor use Create<T>(). " +
+                                          $"Alternatively use 'Moqqer.MockConcreteReturnTypes = true;' " +
+                                          $"(see https://github.com/michal-ciechan/Moqqer#mock-concrete-return-types for more info)");
 
             var res = ctor.Invoke(null);
 
@@ -182,7 +194,7 @@ namespace MoqqerNamespace
 
             foreach (var factory in DefaultFactories)
             {
-                if(!factory.CanHandle(type, openType, genericArguments))
+                if(!factory.CanHandle(this, type, openType, genericArguments))
                     continue;
 
                 var obj = factory.Create(this, type, openType, genericArguments);
@@ -233,18 +245,25 @@ namespace MoqqerNamespace
 
         internal object[] CreateParameters(ConstructorInfo ctor)
         {
-            var parameters = ctor.GetParameters();
-
-            var res = new object[parameters.Length];
-
-            for (var i = 0; i < parameters.Length; i++)
+            try
             {
-                var type = parameters[i].ParameterType;
+                var parameters = ctor.GetParameters();
 
-                res[i] = GetParameter(type, ctor);
+                var res = new object[parameters.Length];
+
+                for (var i = 0; i < parameters.Length; i++)
+                {
+                    var type = parameters[i].ParameterType;
+
+                    res[i] = GetParameter(type, ctor);
+                }
+
+                return res;
             }
-
-            return res;
+            catch (Exception e)
+            {
+                throw new MoqqerException($"Exception happened while trying to Create Parameters for Constructor '{ctor.Describe()}'. See Inner exception for more details.", e);
+            }
         }
 
         internal T GetInstance<T>()
@@ -289,6 +308,11 @@ namespace MoqqerNamespace
             return Object(type);
         }
 
+        internal bool CanGetDefaultOrMock(Type type)
+        {
+            return HasObjectOrDefault(type) || type.IsMockable();
+        }
+
         internal object GetParameter(Type type, ConstructorInfo ctor)
         {
             var mocked = type.IsFunc()
@@ -317,16 +341,23 @@ namespace MoqqerNamespace
 
         internal Mock Of(Type type)
         {
-            if (Mocks.ContainsKey(type))
-                return Mocks[type];
+            try
+            {
+                if (Mocks.ContainsKey(type))
+                    return Mocks[type];
 
-            var mock = MockOfType(type);
+                var mock = MockOfType(type);
 
-            Mocks.Add(type, mock);
+                Mocks.Add(type, mock);
 
-            SetupMockMethods(mock, type);
+                SetupMockMethods(mock, type);
 
-            return mock;
+                return mock;
+            }
+            catch (Exception e)
+            {
+                throw new MoqqerException($"Exception happened while trying to create a mock of '{type.Describe()}'. See inner exception for more details", e);
+            }
         }
 
         public List<T> List<T>()
@@ -336,65 +367,87 @@ namespace MoqqerNamespace
 
         internal void SetupMockMethods(Mock mock, Type type)
         {
-            var canCreate = MockConcreteReturnTypes
-                ? (Predicate<Type>)CanCreate
-                : HasObjectOrDefault;
-
-            var methods = type.GetMockableMethods(canCreate).ToList();
-
-            if (!methods.Any()) return;
-
-            var mockType = typeof(Mock<>).MakeGenericType(type);
-
-            var mockSetupFuncMethod = mockType.GetMethods()
-                .Single(x => x.Name == "Setup" && x.ContainsGenericParameters);
-
-            var inputParameter = Expression.Parameter(type, "x"); // Moqqer Lambda Param
-
-            foreach (var method in methods)
+            try
             {
-                if(method.IsGenericMethod)
-                    continue;
-                
-                if(!method.IsMockable())
-                    continue;
+                var canCreate = MockConcreteReturnTypes
+                    ? (Predicate<Type>) CanCreate
+                    : HasObjectOrDefault;
 
-                var parameters = method.GetParameters();
-                var args =
-                    parameters.Select(x => (Expression) Expression.Call(MoqItIsAnyGenericMethod.MakeGenericMethod(x.ParameterType)))
-                        .ToArray();
+                var methods = type.GetMockableMethods(canCreate).ToList();
 
-                var reflectedExpression = Expression.Call(inputParameter, method, args);
+                if (!methods.Any()) return;
 
-                var setupFuncType = typeof(Func<,>).MakeGenericType(type, method.ReturnType);
+                var mockType = typeof(Mock<>).MakeGenericType(type);
 
-                var lambda = Expression.Lambda(setupFuncType, reflectedExpression, inputParameter);
+                var mockSetupFuncMethod = mockType.GetMethods()
+                    .Single(x => x.Name == "Setup" && x.ContainsGenericParameters);
 
-                var genericMockSetupFuncMethod = mockSetupFuncMethod.MakeGenericMethod(method.ReturnType);
-                var setup = genericMockSetupFuncMethod.Invoke(mock, new object[] {lambda});
+                var inputParameter = Expression.Parameter(type, "x"); // Moqqer Lambda Param
 
-                var funcType = typeof(Func<>).MakeGenericType(method.ReturnType);
-
-                var setupType = setup.GetType();
-                
-                var instanceFunc = GetInstanceFunc(funcType, method);
-
-                if (HasFactoryFor(method.ReturnType))
+                foreach (var method in methods)
                 {
-                    // Moq.Returns<TArg1,TArg2,...,T>(Func<TArg1, TArg2..., T> func)
-                    var returnsMethod = GetMoqReturnsMethod(method, setupType);
-
-                    // Func<TArg1, TArg2..., T>
-                    var returnDelegate = GetInstanceFactoryFunc(method, instanceFunc);
-
-                    returnsMethod.Invoke(setup, new[] {returnDelegate});
+                    try
+                    {
+                        SetupMockMethod(mock, type, method, inputParameter, mockSetupFuncMethod);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new MoqqerException($"Exception thrown while trying to setup Mock Method '{method.Describe()} on {type.Describe()}'", e);
+                    }
                 }
-                else
-                {
-                    var returnsMethod = setupType.GetMethod("Returns", new[] { funcType });
+            }
+            catch (Exception e)
+            {
+                throw new MoqqerException($"Exception thrown while trying to setup mock methods on '{type.Describe()}'. See inner exception for more details", e);
+            }
+        }
 
-                    returnsMethod.Invoke(setup, new object[] { instanceFunc });
-                }
+        private void SetupMockMethod(Mock mock, Type type, MethodInfo method, ParameterExpression inputParameter,
+            MethodInfo mockSetupFuncMethod)
+        {
+            if (method.IsGenericMethod)
+                return;
+
+            if (!method.IsMockable())
+                return;
+
+            var parameters = method.GetParameters();
+            var args =
+                parameters.Select(
+                        x => (Expression) Expression.Call(
+                            MoqItIsAnyGenericMethod.MakeGenericMethod(x.ParameterType)))
+                    .ToArray();
+
+            var reflectedExpression = Expression.Call(inputParameter, method, args);
+
+            var setupFuncType = typeof(Func<,>).MakeGenericType(type, method.ReturnType);
+
+            var lambda = Expression.Lambda(setupFuncType, reflectedExpression, inputParameter);
+
+            var genericMockSetupFuncMethod = mockSetupFuncMethod.MakeGenericMethod(method.ReturnType);
+            var setup = genericMockSetupFuncMethod.Invoke(mock, new object[] {lambda});
+
+            var funcType = typeof(Func<>).MakeGenericType(method.ReturnType);
+
+            var setupType = setup.GetType();
+
+            var instanceFunc = GetInstanceFunc(funcType, method);
+
+            if (HasFactoryFor(method.ReturnType))
+            {
+                // Moq.Returns<TArg1,TArg2,...,T>(Func<TArg1, TArg2..., T> func)
+                var returnsMethod = GetMoqReturnsMethod(method, setupType);
+
+                // Func<TArg1, TArg2..., T>
+                var returnDelegate = GetInstanceFactoryFunc(method, instanceFunc);
+
+                returnsMethod.Invoke(setup, new[] {returnDelegate});
+            }
+            else
+            {
+                var returnsMethod = setupType.GetMethod("Returns", new[] {funcType});
+
+                returnsMethod.Invoke(setup, new object[] {instanceFunc});
             }
         }
 
@@ -415,7 +468,7 @@ namespace MoqqerNamespace
                                      x.GetGenericArguments().Length == length);
 
             if(returnsMethodOpenGeneric == null)
-                throw new MoqqerException($"Could not find Moq.Returns method for {setupType} containing {length} generic arguments");
+                throw new MoqqerException($"Could not find Moq.Returns method for {setupType.Describe()} containing {length} generic arguments");
 
             var typeArguments = method.GetParameters().Select(x => x.ParameterType).ToArray();
 
@@ -441,7 +494,7 @@ namespace MoqqerNamespace
         {
             if (!Factories.TryGetValue(method.ReturnType, out IFactory factory))
                 throw new MoqqerException(
-                    $"Could not get factory for creating instance for return type: {method.ReturnType} for method {method.Name} on type {method.DeclaringType}");
+                    $"Could not get factory for creating instance for return type: '{method.ReturnType.Describe()}' for method '{method.Describe()}' on type '{method.DeclaringType.Describe()}'");
             
             // Factory Constant (for calling object GetMethodParameter(Type type, MethodInfo method, object[] args, object defaultMock);
             var factoryExpr = Expression.Constant(factory);
@@ -470,13 +523,7 @@ namespace MoqqerNamespace
             var defaultMockExpression = Expression.Call(Expression.Constant(instanceFunc.Target), instanceFunc.Method);
 
             // Factory Call
-            var getMethodParameterExpression = Expression.Call(factoryExpr, factoryMethod, new Expression[]
-            {
-                typeExpression,
-                calledMethodExpr,
-                arrayExpr,
-                defaultMockExpression
-            });
+            var getMethodParameterExpression = Expression.Call(factoryExpr, factoryMethod, typeExpression, calledMethodExpr, arrayExpr, defaultMockExpression);
 
             var getMethodParamConvertedExpression = Expression.Convert(getMethodParameterExpression, method.ReturnType);
 
