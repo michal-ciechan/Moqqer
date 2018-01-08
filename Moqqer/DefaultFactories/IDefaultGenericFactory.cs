@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MoqqerNamespace.DefaultFactories
 {
-    public interface IDefaultFactory
+    public interface IDefaultGenericFactory
     {
         bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments);
         object Create(Moqqer moq, Type type, Type openType, Type[] genericArguments);

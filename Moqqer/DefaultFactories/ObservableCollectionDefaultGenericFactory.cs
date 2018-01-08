@@ -4,7 +4,7 @@ using MoqqerNamespace.Extensions;
 
 namespace MoqqerNamespace.DefaultFactories
 {
-    class ObservableCollectionDefaultFactory : BaseGenericDefaultFactory
+    class ObservableCollectionDefaultGenericFactory : BaseGenericDefaultGenericFactory
     {
         public override bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments)
         {

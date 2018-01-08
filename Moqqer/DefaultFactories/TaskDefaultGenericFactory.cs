@@ -5,7 +5,7 @@ using MoqqerNamespace.Helpers;
 
 namespace MoqqerNamespace.DefaultFactories
 {
-    class TaskDefaultFactory : BaseGenericDefaultFactory
+    class TaskDefaultGenericFactory : BaseGenericDefaultGenericFactory
     {
         public override bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments)
         {

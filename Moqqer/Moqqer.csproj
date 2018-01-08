@@ -64,12 +64,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallContext.cs" />
-    <Compile Include="DefaultFactories\BaseGenericDefaultFactory.cs" />
-    <Compile Include="DefaultFactories\IDefaultFactory.cs" />
-    <Compile Include="DefaultFactories\ListDefaultFactory.cs" />
-    <Compile Include="DefaultFactories\ObservableCollectionDefaultFactory.cs" />
-    <Compile Include="DefaultFactories\QueryableDefaultFactory.cs" />
-    <Compile Include="DefaultFactories\TaskDefaultFactory.cs" />
+    <Compile Include="DefaultFactories\BaseGenericDefaultGenericFactory.cs" />
+    <Compile Include="DefaultFactories\IDefaultGenericFactory.cs" />
+    <Compile Include="DefaultFactories\ListDefaultGenericFactory.cs" />
+    <Compile Include="DefaultFactories\ObservableCollectionDefaultGenericFactory.cs" />
+    <Compile Include="DefaultFactories\QueryableDefaultGenericFactory.cs" />
+    <Compile Include="DefaultFactories\TaskDefaultGenericFactory.cs" />
     <Compile Include="Extensions\MoqFluentVerifyBuilder.cs" />
     <Compile Include="Extensions\MoqqerExtensions.cs" />
     <Compile Include="Extensions\ObservableCollectionExtensions.cs" />

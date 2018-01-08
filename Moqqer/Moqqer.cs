@@ -30,6 +30,7 @@ namespace MoqqerNamespace
         private static readonly MethodInfo GetInstanceGenericMethod;
         private static readonly MethodInfo GetInstanceFuncGenericMethod;
         private static readonly MethodInfo MoqItIsAnyGenericMethod;
+        private static readonly MethodInfo DefaultArrayGenericMethod;
         internal readonly Dictionary<Type, Mock> Mocks = new Dictionary<Type, Mock>();
         internal readonly Dictionary<Type, object> Objects = new Dictionary<Type, object>();
         internal readonly Dictionary<Type, IFactory> Factories = new Dictionary<Type, IFactory>();
@@ -43,12 +44,12 @@ namespace MoqqerNamespace
             Objects.Add(typeof(Task), TaskHelper.CompletedTask);
         }
 
-        public List<IDefaultFactory> DefaultFactories { get; set; } = new List<IDefaultFactory>
+        public List<IDefaultGenericFactory> DefaultGenericFactories { get; set; } = new List<IDefaultGenericFactory>
         {
-            new ListDefaultFactory(),
-            new ObservableCollectionDefaultFactory(),
-            new QueryableDefaultFactory(),
-            new TaskDefaultFactory(),
+            new ListDefaultGenericFactory(),
+            new ObservableCollectionDefaultGenericFactory(),
+            new QueryableDefaultGenericFactory(),
+            new TaskDefaultGenericFactory(),
         };
 
         static Moqqer()
@@ -58,7 +59,9 @@ namespace MoqqerNamespace
             GetInstanceGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstance));
             GetInstanceFuncGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.GetInstanceFunc));
             MoqItIsAnyGenericMethod = typeof(It).GetMethod("IsAny");
+            DefaultArrayGenericMethod = moqType.GetGenericMethod(nameof(Moqqer.DefaultArray));
         }
+
 
         public T Create<T>(bool autogenerate = false) where T : class
         {
@@ -176,7 +179,32 @@ namespace MoqqerNamespace
             if (type == typeof(string))
                 return AddToObjects(type, string.Empty);
 
+            if (type.IsArray)
+                return DefaultArray(type);
+
             return null;
+        }
+
+        private object DefaultArray(Type type)
+        {
+            if(!type.IsArray)
+                throw new ArgumentOutOfRangeException(nameof(type), "Must be a type of array T[]");
+
+            var elementType = type.GetElementType();
+
+            var res = DefaultArrayGenericMethod.MakeGenericMethod(elementType).Invoke(this, null);
+
+            return res;
+        }
+
+        private T[] DefaultArray<T>()
+        {
+            var list = (List<T>) DefaultGeneric(typeof(List<T>));
+
+            if(list == null)
+                throw new Exception($"Could not get a DefaultGeneric list for List<{typeof(T).Name}>");
+
+            return list.ToArray();
         }
 
         private object DefaultGeneric(Type type)
@@ -192,7 +220,7 @@ namespace MoqqerNamespace
             if (genericArguments.Any(x => x.IsGenericParameter))
                 return null;
 
-            foreach (var factory in DefaultFactories)
+            foreach (var factory in DefaultGenericFactories)
             {
                 if(!factory.CanHandle(this, type, openType, genericArguments))
                     continue;

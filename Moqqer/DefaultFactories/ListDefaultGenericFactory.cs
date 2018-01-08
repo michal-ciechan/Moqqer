@@ -4,7 +4,7 @@ using MoqqerNamespace.Helpers;
 
 namespace MoqqerNamespace.DefaultFactories
 {
-    class ListDefaultFactory : IDefaultFactory
+    class ListDefaultGenericFactory : IDefaultGenericFactory
     {
         public bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments)
         {

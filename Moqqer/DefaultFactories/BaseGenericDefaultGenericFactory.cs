@@ -4,10 +4,10 @@ using MoqqerNamespace.Helpers;
 
 namespace MoqqerNamespace.DefaultFactories
 {
-    abstract class BaseGenericDefaultFactory : IDefaultFactory
+    abstract class BaseGenericDefaultGenericFactory : IDefaultGenericFactory
     {
         public static readonly MethodInfo CreateGenericMethodInfo =
-            typeof(BaseGenericDefaultFactory).GetGenericMethod("CreateGeneric");
+            typeof(BaseGenericDefaultGenericFactory).GetGenericMethod("CreateGeneric");
 
         public abstract bool CanHandle(Moqqer moq, Type type, Type openType, Type[] genericArguments);
         public object Create(Moqqer moq, Type type, Type openType, Type[] genericArguments)
