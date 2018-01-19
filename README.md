@@ -306,9 +306,15 @@ _moq.Create<FizzBuzzGame>().Buzz.Should().BeSameAs(buzz);
 _moq.Use(25);
 _moq.Create<Fizz>().Divisor.Should().Be(25);
 
-// Allow you to set a default value as well as reference types
+// Allow you to set a default value for reference types
 _moq.Use("GitHub");
 _moq.Create<StringCtor>().Text.Should().Be("GitHub");
+
+// ### Shortcuts
+// Shortcut for creating a concrete type, and using this instance for all implemented interfaces.
+// e.g. syntactic sugar for _moq.Use(_moq.Create<Leaf>).ForAllImplementedInterfaces()
+var leaf = _moq.Use<Leaf>(); 
+_moq.Create<Branch>().Leaf.Should().BeSameAs(leaf);
 ```
 
 ## List
@@ -391,6 +397,7 @@ tree.Branch.ConcreteLeaf.Should()
 |`string`  |  `string.Empty`
 |`List<T>` |  `moq.List<T>()`
 |`IList<T>` |  `moq.List<T>()`
+|`T[]` |  `moq.List<T>()`
 |`ObservableCollection<T>` | `ObservableCollection<T>` that is backed by `moq.List<T>()`
 |`IQueryable<T>` |  `moq.List<T>()`
 |`Task` |  Completed Task e.g. `Task.FromResult(true)`

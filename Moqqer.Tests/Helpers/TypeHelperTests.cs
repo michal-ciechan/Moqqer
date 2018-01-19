@@ -210,7 +210,7 @@ namespace MoqqerNamespace.Tests.Helpers
             void Method6(Tuple<int,string> tuple, string b);
             void Method7(Task<int> t, object a);
             void Method8(object[] a);"
-        .Split('\r')
+        .Split(new []{"\r\n", "\r","\n"}, StringSplitOptions.None)
             .Select(x => x.Trim())
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .ToArray();

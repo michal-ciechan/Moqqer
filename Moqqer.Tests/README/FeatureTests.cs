@@ -134,6 +134,12 @@ namespace MoqqerNamespace.Tests.README
             // Allow you to set a default value for reference types
             _moq.Use("GitHub");
             _moq.Create<StringCtor>().Text.Should().Be("GitHub");
+
+            // ### Shortcuts
+            // Shortcut for creating a concrete type, and using this instance for all implemented interfaces.
+            // e.g. syntactic sugar for _moq.Use(_moq.Create<Leaf>).ForAllImplementedInterfaces()
+            var leaf = _moq.Use<Leaf>(); 
+            _moq.Create<Branch>().Leaf.Should().BeSameAs(leaf);
         }
 
         [Test]

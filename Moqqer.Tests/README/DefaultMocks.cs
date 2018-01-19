@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using MoqqerNamespace.Extensions;
 using NUnit.Framework;
 
 namespace MoqqerNamespace.Tests.README
@@ -53,6 +54,26 @@ namespace MoqqerNamespace.Tests.README
         }
 
         [Test]
+        public void Array()
+        {
+            var obj = _moq.Object<string[]>();
+
+            obj.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Array_NonEmpty()
+        {
+            _moq.Add("Test1");
+            _moq.Add("Test2");
+
+            var obj = _moq.Object<string[]>();
+
+            obj.Should().NotBeNull();
+            obj.ShouldBeEquivalentTo(_moq.List<string>());
+        }
+
+        [Test]
         public void TaskT()
         {
             var task = _moq.Object<Task<string>>();
@@ -62,6 +83,16 @@ namespace MoqqerNamespace.Tests.README
             task.IsCompleted.Should().BeTrue();
 
             task.Result.Should().Be(_moq.Object<string>());
+        }
+
+        [Test]
+        public void TaskOfArrayStrings()
+        {
+            var task = _moq.Object<Task<string[]>>();
+
+            task.Should().NotBeNull();
+            task.IsCompleted.Should().BeTrue();
+            task.Result.Should().BeEmpty();
         }
 
         [Test]

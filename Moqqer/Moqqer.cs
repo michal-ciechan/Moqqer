@@ -614,6 +614,15 @@ namespace MoqqerNamespace
             return Use(implementation, typeof(T));
         }
 
+        public T Use<T>() where T : class
+        {
+            var obj = Create<T>();
+            
+            Use(obj, typeof(T)).ForAllImplementedInterfaces();
+
+            return obj;
+        }
+
         private IMoqqerObjectContext Use(object implementation, Type type)
         {
             Objects[type] = implementation;
