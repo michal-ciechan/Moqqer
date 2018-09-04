@@ -98,7 +98,7 @@ namespace MoqqerNamespace
             if (Default(type) != null)
                 return true;
 
-            if (Objects.ContainsKey(type))
+            if (Factories.ContainsKey(type))
                 return true;
 
             return false;
@@ -137,7 +137,34 @@ namespace MoqqerNamespace
             return Object(type) as T;
         }
 
-        public object Object(Type type)
+		/// <summary>
+		/// Returns a registered Default for the type if exists, otherwise either calls a parameterless ctor or returns `default(type)`
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+	    public object ObjectOrDefault(Type type)
+	    {
+		    var def = Default(type);
+		    if (def != null) return def;
+
+		    var ctor = type.GetDefaultCtor();
+
+		    if (ctor == null)
+			    return type.GetDefaultInstance();
+
+		    var res = ctor.Invoke(null);
+
+		    AddToObjects(type, res);
+
+		    return res;
+	    }
+
+		/// <summary>
+		/// Returns a registered Default for the type if exists, otherwise either calls a parameterless ctor or throws an exception
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public object Object(Type type)
         {
             var def = Default(type);
             if (def != null) return def;
@@ -325,9 +352,22 @@ namespace MoqqerNamespace
             return func;
         }
 
-        internal object GetInstance(Type type)
+	    internal object GetInstanceOrDefault(Type type)
+	    {
+		    var def = Default(type);
+
+		    if (def != null) return def;
+
+		    if (type.IsMockable())
+			    return Of(type).Object;
+
+		    return ObjectOrDefault(type);
+	    }
+
+		internal object GetInstance(Type type)
         {
             var def = Default(type);
+
             if (def != null) return def;
 
             if (type.IsMockable())
@@ -335,22 +375,33 @@ namespace MoqqerNamespace
 
             return Object(type);
         }
+	    
+	    
 
-        internal bool CanGetDefaultOrMock(Type type)
+		internal bool CanGetDefaultOrMock(Type type)
         {
             return HasObjectOrDefault(type) || type.IsMockable();
         }
 
         internal object GetParameter(Type type, ConstructorInfo ctor)
-        {
-            var mocked = type.IsFunc()
-                ? GetInstanceFunc(type)
-                : GetInstance(type);
+		{
 
-            if (!Factories.TryGetValue(type, out IFactory factory))
-                return mocked;
+			var isFunc = type.IsFunc();
 
-            return factory.GetConstructorParameter(type, ctor, mocked);
+			if (Factories.TryGetValue(type, out IFactory factory))
+			{
+				var defaultParam = isFunc
+					? GetInstanceFunc(type)
+					: GetInstanceOrDefault(type);
+
+				return factory.GetConstructorParameter(type, ctor, defaultParam);
+			}
+
+			var mocked = isFunc
+				? GetInstanceFunc(type)
+				: GetInstance(type);
+
+			return mocked;
         }
 
         internal bool HasParameterlessCtor(Type type)

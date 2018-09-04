@@ -276,7 +276,7 @@ namespace MoqqerNamespace.Tests
             mock.Object.GetA().Should().NotBeNull();
         }
 
-        [Test]
+		[Test]
         public void HasObjectOrDefault_TupleTask_ShouldBeCompleteTaskWithDefault()
         {
             _moq.HasObjectOrDefault(typeof(Task<Tuple<string>>)).Should().BeFalse();
@@ -439,7 +439,20 @@ namespace MoqqerNamespace.Tests
                 .NotBeSameAs(customLeaf);
         }
 
-        [Test]
+
+	    [Test]
+	    public void Factory_For_ClassWithoutParameterlessCtor_ShouldFindAndCreateClassContainingClassWithoutParameterlessCtor()
+	    {
+		    var instance = _moq.Create<ClassWithoutParameterlessCtor>();
+
+		    _moq.Factory<ClassWithoutParameterlessCtor>(_ => instance);
+
+		    var parent = _moq.Create<ClassWithCtorContainingClassWithoutParameterlessCtor>();
+
+		    parent.CtorParam.Should().BeSameAs(instance);
+	    }
+
+		[Test]
         public void Create_MockConcreteReturnTypes_MockedInterfaceWithConcreteClassProperty()
         {
             _moq.MockConcreteReturnTypes = true;

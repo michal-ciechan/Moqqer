@@ -10,8 +10,12 @@ namespace MoqqerNamespace.Helpers
 {
     internal static class TypeExtensions
     {
+	    public static object GetDefaultInstance(this Type type)
+	    {
+		    return type.IsValueType ? Activator.CreateInstance(type) : null;
+	    }
 
-        public static IEnumerable<Type> FlattenInheritance(this Type type)
+		public static IEnumerable<Type> FlattenInheritance(this Type type)
         {
             yield return type;
 
