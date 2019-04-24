@@ -71,7 +71,7 @@ _moq.Verify<IDepencyA>(x => x.Call())
 
 # Example
 
-    using Moqqer.Namespace
+    using MoqqerNamespace
 
 ```csharp
 [TestFixture]
