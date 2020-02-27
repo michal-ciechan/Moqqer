@@ -1,120 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">R</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A8D854DE-482C-4F15-9BC7-FE8A8041580D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MoqqerNamespace</RootNamespace>
-    <AssemblyName>Moqqer</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release40|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <OutputPath>bin\Release\net40\</OutputPath>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard20</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
+    <Company>Michal Ciechan @ Codeperf.net</Company>
+    <Authors>Michal Ciechan @ Codeperf.net</Authors>
+    <Description>An Auto Mocker for Moq that acts like a IoC Container and creates default mocks recursively which all you have to do is verify.</Description>
+    <PackageProjectUrl>https://github.com/michal-ciechan/Moqqer</PackageProjectUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RootNamespace>MoqqerNamespace</RootNamespace>
   </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Moqqer.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Moq" Version="4.13.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CallContext.cs" />
-    <Compile Include="DefaultFactories\BaseGenericDefaultGenericFactory.cs" />
-    <Compile Include="DefaultFactories\IDefaultGenericFactory.cs" />
-    <Compile Include="DefaultFactories\ListDefaultGenericFactory.cs" />
-    <Compile Include="DefaultFactories\ObservableCollectionDefaultGenericFactory.cs" />
-    <Compile Include="DefaultFactories\QueryableDefaultGenericFactory.cs" />
-    <Compile Include="DefaultFactories\TaskDefaultGenericFactory.cs" />
-    <Compile Include="Extensions\MoqFluentVerifyBuilder.cs" />
-    <Compile Include="Extensions\MoqqerExtensions.cs" />
-    <Compile Include="Extensions\ObservableCollectionExtensions.cs" />
-    <Compile Include="Factory.cs" />
-    <Compile Include="Helpers\TaskHelper.cs" />
-    <Compile Include="IMoqqerObjectContext.cs" />
-    <Compile Include="MoqFactory.cs" />
-    <Compile Include="Moqqer.cs" />
-    <Compile Include="MoqqerException.cs" />
-    <Compile Include="MoqqerQueryable\EnumerableExecutor.cs" />
-    <Compile Include="MoqqerQueryable\EnumerableMoqqerQuery.cs" />
-    <Compile Include="MoqqerQueryable\EnumerableMoqqerQueryExtensions.cs" />
-    <Compile Include="MoqqerQueryable\EnumerableRewriter.cs" />
-    <Compile Include="MoqqerQueryable\MoqqerExpressionRewriter.cs" />
-    <Compile Include="MoqqerQueryable\OldExpressionVisitor.cs" />
-    <Compile Include="MoqqerQueryable\ReadOnlyCollectionExtensions.cs" />
-    <Compile Include="MoqqerQueryable\TypeHelper.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Helpers\TypeExtensions.cs" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(MSBuildProjectName).Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Moqqer.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Moqqer.snk" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="BeforeBuild">
-  </Target>
-  <!--
-  <Target Name="AfterBuild">
-    <GetAssemblyIdentity AssemblyFiles="$(OutputPath)$(AssemblyName).dll">
-      <Output TaskParameter="Assemblies" ItemName="OutputAssemblyInfo" />
-    </GetAssemblyIdentity>
-    <Message Text="Info: %(OutputAssemblyInfo.Version)" />
-    <RemoveDir Directories="NuGet" />
-    <MakeDir Directories="NuGet" />
-    <Exec WorkingDirectory="$(ProjectDir)" Command="nuget.exe pack $(ProjectFileName) -Symbols -OutputDir &quot;NuGet&quot; -Verbosity detailed -Prop Configuration=$(Configuration);" />
-  </Target>
-  -->
-  <Target Name="Package">
-    <!-- Ensure the Package directory exists for this project -->
-    <!-- Package the project -->
-    <Exec WorkingDirectory="$(ProjectDir)" Command="nuget.exe pack -Verbosity detailed $(ProjectFileName)" />
-  </Target>
 </Project>

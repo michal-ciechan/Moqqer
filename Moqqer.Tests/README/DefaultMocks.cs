@@ -70,7 +70,7 @@ namespace MoqqerNamespace.Tests.README
             var obj = _moq.Object<string[]>();
 
             obj.Should().NotBeNull();
-            obj.ShouldBeEquivalentTo(_moq.List<string>());
+            obj.Should().BeEquivalentTo(_moq.List<string>());
         }
 
         [Test]
