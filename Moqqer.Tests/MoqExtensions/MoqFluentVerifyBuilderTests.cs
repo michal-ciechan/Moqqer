@@ -25,7 +25,7 @@ namespace MoqqerNamespace.Tests.MoqExtensions
         {
             Action action = () => _moq.Verify<ILeaf>(x => x.Grow()).Once();
 
-            action.ShouldThrow<MockException>()
+            action.Should().Throw<MockException>()
                 .WithMessage("*Expected invocation on the mock once, but was 0 times*");
         }
 
@@ -45,7 +45,7 @@ namespace MoqqerNamespace.Tests.MoqExtensions
 
             Action action = () => _moq.Verify<ILeaf>(x=> x.Grow()).Once();
 
-            action.ShouldThrow<MockException>()
+            action.Should().Throw<MockException>()
                 .WithMessage("*Expected invocation on the mock once, but was 2 times*");
         }
 
@@ -55,7 +55,7 @@ namespace MoqqerNamespace.Tests.MoqExtensions
         {
             Action action = () => _moq.Verify<ILeaf>(x => x.Grow()).WasCalled();
 
-            action.ShouldThrow<MockException>()
+            action.Should().Throw<MockException>()
                 .WithMessage("*Expected invocation on the mock at least once, but was never performed*");
         }
 
@@ -82,7 +82,7 @@ namespace MoqqerNamespace.Tests.MoqExtensions
         {
             Action action = () => _moq.Verify<ILeaf>(x => x.Grow()).Times(3);
 
-            action.ShouldThrow<MockException>()
+            action.Should().Throw<MockException>()
                 .WithMessage("*Expected invocation on the mock exactly 3 times, but was 0 times*");
         }
 
@@ -104,7 +104,7 @@ namespace MoqqerNamespace.Tests.MoqExtensions
 
             Action action = () => _moq.Verify<ILeaf>(x => x.Grow()).Times(3);
 
-            action.ShouldThrow<MockException>()
+            action.Should().Throw<MockException>()
                 .WithMessage("*Expected invocation on the mock exactly 3 times, but was 2 times*");
         }
 
@@ -118,7 +118,7 @@ namespace MoqqerNamespace.Tests.MoqExtensions
 
             Action action = () => _moq.Verify<ILeaf>(x => x.Grow()).Times(3);
 
-            action.ShouldThrow<MockException>()
+            action.Should().Throw<MockException>()
                 .WithMessage("*Expected invocation on the mock exactly 3 times, but was 4 times*");
         }
 
@@ -135,7 +135,7 @@ namespace MoqqerNamespace.Tests.MoqExtensions
 
             Action action = () => _moq.Verify<ILeaf>(x => x.Grow()).Never();
 
-            action.ShouldThrow<MockException>()
+            action.Should().Throw<MockException>()
                 .WithMessage("*Expected invocation on the mock should never have been performed, but was 1 times*");
         }
 

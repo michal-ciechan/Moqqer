@@ -256,7 +256,7 @@ namespace MoqqerNamespace.Tests
 		{
 			Action act = () => _moq.GetInstance<Tuple<string>>();
 
-			act.ShouldThrow<MoqqerException>().Which.Message.Should()
+			act.Should().Throw<MoqqerException>().Which.Message.Should()
 				.Contain("Cannot get Type('Tuple<string>') as it does not have a default constructor.");
 		}
 
@@ -307,13 +307,11 @@ namespace MoqqerNamespace.Tests
 
 		[Test]
 		public void Object_ClassWithCtorContainingClassWithoutParameterlessCtor_ShouldThrowException()
-		{
-			TestDelegate action =
-				() => _moq.Object<ClassWithCtorContainingClassWithParameterlessCtor>();
+        {
+            void Action() => _moq.Object<ClassWithCtorContainingClassWithParameterlessCtor>();
 
-			Assert.That(action, Throws.TypeOf<MoqqerException>());
-		}
-
+            Assert.That(Action, Throws.TypeOf<MoqqerException>());
+        }
 
 		[Test]
 		public void Object_ClassWithCtorContainingClassWithParameterlessCtor_ShouldInjectDefaultObject()
@@ -324,18 +322,16 @@ namespace MoqqerNamespace.Tests
 			Assert.That(action, Throws.TypeOf<MoqqerException>());
 		}
 
-
 		[Test]
 		public void Object_ClassWithCtorContainingClassWithParameterlessCtor_ShouldReturn()
-		{
-			TestDelegate action =
-				() => _moq.Object<ClassHavingParameterlessConcreteClass>();
+        {
+            void Action() => _moq.Object<ClassHavingParameterlessConcreteClass>();
 
-			Assert.That(action, Throws.TypeOf<MoqqerException>());
-		}
+            Assert.That(Action, Throws.TypeOf<MoqqerException>());
+        }
 
 		[Test]
-		public void Of_ClassWithNonVirtualMemeber_CanMock()
+		public void Of_ClassWithNonVirtualMember_CanMock()
 		{
 			var res = _moq.Of<ClassWithNonVirtualMemeber>();
 

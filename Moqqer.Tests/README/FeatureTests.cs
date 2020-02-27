@@ -201,7 +201,7 @@ namespace MoqqerNamespace.Tests.README
             
             Action act = () => ctx.Parents.Select(x => (int?)x.Child.Age).Single();
 
-            act.ShouldThrow<NullReferenceException>("x.Child is null");
+            act.Should().Throw<NullReferenceException>("x.Child is null");
         }
 
         [Test]
