@@ -8,6 +8,7 @@ using MoqqerNamespace.Extensions;
 using MoqqerNamespace.MoqqerQueryable;
 using MoqqerNamespace.Tests.TestClasses;
 using NUnit.Framework;
+using Range = Moq.Range;
 
 // ReSharper disable once RedundantUsingDirective
 

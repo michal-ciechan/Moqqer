@@ -82,15 +82,12 @@ namespace MoqqerNamespace.Tests.Helpers
 
         private Level0 GetItem(string key)
         {
-            switch (key)
+            return key switch
             {
-                case nameof(AllLevels):
-                    return AllLevels;
-                case nameof(SingleLevel):
-                    return SingleLevel;
-                default:
-                    throw new Exception();
-            }
+                nameof(AllLevels) => AllLevels,
+                nameof(SingleLevel) => SingleLevel,
+                _ => throw new Exception()
+            };
         }
 
         private List<Level0> GetItems(string key, Action<Level0> itemAction = null)
