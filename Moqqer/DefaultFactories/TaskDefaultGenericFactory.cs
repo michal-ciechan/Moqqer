@@ -14,7 +14,7 @@ namespace MoqqerNamespace.DefaultFactories
 
         private bool AreMockable(Moqqer moq, Type type)
         {
-            return moq.CanGetDefaultOrMock(type);
+            return moq.CanGetDefaultOrMock(type) && !type.IsGenericType;
         }
 
 

@@ -29,7 +29,7 @@ namespace MoqqerNamespace.Tests.Helpers
 
             var methods = type.GetMockableMethods(x => false).Select(x => x.Name).ToList();
 
-            methods.Should().BeEmpty(" all methods of type IInterfaceWithGenericMethod are open Generic. Currently no supported way by Mock<T> to return a custo value.");
+            methods.Should().BeEmpty(" all methods of type IInterfaceWithGenericMethod are open Generic. Currently no supported way by Mock<T> to return a custom value.");
         }
 
         [Test]
@@ -193,14 +193,14 @@ namespace MoqqerNamespace.Tests.Helpers
             var type = typeof(IAllMethodCombinations);
 
             var meth = type.GetMethod("Method" + i);
-            var expected = methods[i];
+            var expected = _methods[i];
 
             var description = meth.Describe() + ";";
 
             description.Should().Be(expected);
         }
 
-        string[] methods = @"
+        private static readonly string[] _methods = @"
             void Method0();
             Task<T> Method1<T>();
             Tuple<T1,T2> Method2<T1,T2>();

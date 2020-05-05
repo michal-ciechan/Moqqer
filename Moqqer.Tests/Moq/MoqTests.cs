@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using FluentAssertions;
 using Moq;
 using MoqqerNamespace.Tests.TestClasses;
@@ -13,25 +9,11 @@ namespace MoqqerNamespace.Tests.Moq
     public class MoqTests
     {
         [Test]
-        public void Moq_Setup_IsAny_CallsAany()
-        {
-            var mock = new Mock<IParameterisedMethodClass>();
-
-            mock.Setup(q => q.Call(It.IsAny<int>())).Returns("Any");
-
-
-            var res = mock.Object.Call(25);
-
-            res.Should().Be("Any");
-        }
-
-        [Test]
         public void Moq_Setup_IsAny_CallsAny()
         {
             var mock = new Mock<IParameterisedMethodClass>();
 
             mock.Setup(q => q.Call(It.IsAny<int>())).Returns("Any");
-
 
             var res = mock.Object.Call(25);
 
@@ -71,14 +53,18 @@ namespace MoqqerNamespace.Tests.Moq
         {
             var mock = new Mock<IInterfaceWithGenericMethod>();
 
-            //mock.Setup(q => q.Queryable<object>()).Returns(() =>
-            //{
-            //    var asQueryable = new HashSet<object>() {"Test"}.AsQueryable();
-            //    return asQueryable;
-            //});
-
             var res = mock.Object.Queryable<StringCtor>();
             
+            res.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Moq_GenericAsyncMethod_GetsMock()
+        {
+            var mock = new Mock<IInterfaceWithGenericMethod>();
+
+            var res = mock.Object.QueryableAsync<StringCtor>();
+
             res.Should().NotBeNull();
         }
     }

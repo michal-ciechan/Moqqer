@@ -9,7 +9,14 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RootNamespace>MoqqerNamespace</RootNamespace>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
+    <ReleaseNotes>
+      2.0.1 
+      - Fixed Task`T` Generic method blowing up create
+    </ReleaseNotes>
+    <ReleaseNotes>
+
+    </ReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.13.1" />
