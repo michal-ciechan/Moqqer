@@ -94,6 +94,18 @@ namespace MoqqerNamespace.Tests
 				.Should().BeSameAs(_moq.Object<List<string>>());
 		}
 
+		/// <summary>
+		///     Issue #40
+		/// </summary>
+		[Test]
+		public void Create_ClassWithCtorContainingIInterfaceWithOutAndRefParamMethods_CanCreate()
+		{
+			var res = _moq.Create<ClassWithCtorContainingIInterfaceWithOutAndRefParamMethods>();
+
+			res.CtorParam.Should().NotBeNull();
+		}
+		
+
 		[Test]
 		public void Create_ClassWitIInterfaceWithGenericMethodParam_CanCreate()
 		{
@@ -417,6 +429,14 @@ namespace MoqqerNamespace.Tests
 
 			// IQueryable should be equivalent as List.AsQueryable() gets returned which is a wrapper
 			res.GetIQueryable().Should().BeEquivalentTo(_moq.List<Leaf>());
+		}
+
+		[Test]
+		public void Of_IInterfaceWithOutAndRefParamMethods_CanMock()
+		{
+			var res = _moq.Of<IInterfaceWithOutAndRefParamMethods>();
+
+			res.Should().NotBeNull();
 		}
 
 		[Test]

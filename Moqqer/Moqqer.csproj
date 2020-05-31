@@ -4,19 +4,12 @@
     <SignAssembly>true</SignAssembly>
     <Company>Michal Ciechan @ Codeperf.net</Company>
     <Authors>Michal Ciechan @ Codeperf.net</Authors>
-    <Description>An Auto Mocker for Moq that acts like a IoC Container and creates default mocks recursively which all you have to do is verify.</Description>
+    <Description>An Opinionated Auto Mocker for Moq that acts like a IoC Container and creates default mocks recursively, all you have to do is verify.</Description>
     <PackageProjectUrl>https://github.com/michal-ciechan/Moqqer</PackageProjectUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RootNamespace>MoqqerNamespace</RootNamespace>
-    <Version>2.0.1</Version>
-    <ReleaseNotes>
-      2.0.1 
-      - Fixed Task`T` Generic method blowing up create
-    </ReleaseNotes>
-    <ReleaseNotes>
-
-    </ReleaseNotes>
+    <Version>2.0.2</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.13.1" />
@@ -26,4 +19,13 @@
       <_Parameter1>$(MSBuildProjectName).Tests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
+
+  <Target Name="PreparePackageReleaseNotesFromFile" BeforeTargets="GenerateNuspec">
+    <ReadLinesFromFile File="../RELEASE-NOTES.txt" >
+      <Output TaskParameter="Lines" ItemName="ReleaseNoteLines"/>
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <PackageReleaseNotes>@(ReleaseNoteLines, '%0a')</PackageReleaseNotes>
+    </PropertyGroup>
+  </Target>
 </Project>

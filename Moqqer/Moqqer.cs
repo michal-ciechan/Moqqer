@@ -491,6 +491,14 @@ namespace MoqqerNamespace
                 return;
 
             var parameters = method.GetParameters();
+
+            // Issue #40 - Disable Mocking method with out parameter until 
+            if (parameters.Any(x => x.IsOut))
+                return;
+
+            if (parameters.Any(x => x.ParameterType.IsByRef))
+                return;
+            
             var args =
                 parameters.Select(
                         x => (Expression) Expression.Call(
