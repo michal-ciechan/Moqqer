@@ -177,7 +177,7 @@ public void DefaultObjectInjection()
 
 By default Moqqer will inject Mocks into types which are _Mockable_. For types which aren't Mockable, Moqqer will resolve those to the type or object as per the [Non Mockable Defaults](#default-mocks) below.
 
-e.g. This helps with testing Entity Framework repository/expression logic allowing you to use `Lists` as if they were the backing Tables.
+e.g. This helps with testing Entity Framework repository/expression logic, allowing you to use `Lists` as if they were the backing Tables.
 
 ```csharp
 var item = new Leaf(25);
@@ -387,6 +387,12 @@ var tree = _moq.Create<Tree>(true);
 tree.Branch.ConcreteLeaf.Should()
     .NotBeNull();
 ```
+# Known Issues
+
+Currently auto mocking of methods with `out` or `ref` parameters doesn't work, until the following issues are fixed:
+
+* [#41 -  Auto mock out parameters](https://github.com/michal-ciechan/Moqqer/issues/41)
+* [#42 -  Auto mock ref parameters](https://github.com/michal-ciechan/Moqqer/issues/42)
 
 # Moq Extensions
 
