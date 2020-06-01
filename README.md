@@ -20,6 +20,7 @@
 	- [List](#list)
 	- [Factory Method](#factory-method)
 	- [Mock Concrete Return Types](#mock-concrete-return-types)
+- [Known Issues](#known-issues)
 - [Moq Extensions](#moq-extensions)
 - [Default Mocks](#default-mocks)
 - [Func<T> Resolution](#funct-resolution)
