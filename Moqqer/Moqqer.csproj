@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard20</TargetFrameworks>
+    <TargetFrameworks>net46;netstandard20</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <Company>Michal Ciechan @ Codeperf.net</Company>
     <Authors>Michal Ciechan @ Codeperf.net</Authors>
@@ -12,6 +12,7 @@
     <Version>2.0.2</Version>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DryIoc.dll" Version="4.7.4" />
     <PackageReference Include="Moq" Version="4.13.1" />
   </ItemGroup>
   <ItemGroup>
@@ -21,8 +22,8 @@
   </ItemGroup>
 
   <Target Name="PreparePackageReleaseNotesFromFile" BeforeTargets="GenerateNuspec">
-    <ReadLinesFromFile File="../RELEASE-NOTES.txt" >
-      <Output TaskParameter="Lines" ItemName="ReleaseNoteLines"/>
+    <ReadLinesFromFile File="../RELEASE-NOTES.txt">
+      <Output TaskParameter="Lines" ItemName="ReleaseNoteLines" />
     </ReadLinesFromFile>
     <PropertyGroup>
       <PackageReleaseNotes>@(ReleaseNoteLines, '%0a')</PackageReleaseNotes>

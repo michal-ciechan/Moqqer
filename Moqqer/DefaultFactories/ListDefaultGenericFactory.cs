@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DryIoc;
 using MoqqerNamespace.Helpers;
 
 namespace MoqqerNamespace.DefaultFactories
@@ -21,7 +22,12 @@ namespace MoqqerNamespace.DefaultFactories
         {
             var listType = typeof(List<>).MakeGenericType(genericArguments);
 
-            return moq.GetOrCreateObject(listType);
+            var container = moq.Container;
+
+            if (container.IsRegistered(listType))
+                return container.Resolve(listType);
+
+            return container.Resolve(listType);
         }
     }
 }

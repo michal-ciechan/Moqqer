@@ -60,6 +60,11 @@ namespace MoqqerNamespace.Helpers
                    && x.IsVirtual;
         }
 
+        public static bool HasMultipleConstructors(this Type type)
+        {
+            return type.GetConstructors()?.Length > 1;
+        }
+
         public static ConstructorInfo FindConstructor(this Type type, Predicate<Type> canInject)
         {
             var ctors = type.GetConstructors();

@@ -14,20 +14,15 @@ namespace MoqqerNamespace.DefaultFactories
 
         private bool AreMockable(Moqqer moq, Type type)
         {
-            return moq.CanGetDefaultOrMock(type) && !type.IsGenericType;
+            return moq.IsRegisteredOrCanMock(type) && !type.IsGenericType;
         }
 
 
         public override object CreateGeneric<T>(Moqqer moq, Type type, Type openType)
         {
-            var instance = moq.GetInstance(typeof(T));
+            var instance = moq.GetInstance<T>();
 
-            // ReSharper disable once MergeConditionalExpression
-            var result = instance is T
-                ? (T) instance
-                : default(T);
-
-            return TaskHelper.FromResult(result);
+            return TaskHelper.FromResult(instance);
         }
     }
 }

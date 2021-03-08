@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using DryIoc;
 using FluentAssertions;
 using Moq;
 using MoqqerNamespace.Extensions;
@@ -66,11 +67,11 @@ namespace MoqqerNamespace.Tests.README
         {
             var root = _moq.Create<Root>();
 
-            _moq.Mocks.Should().NotContainKey(typeof(IBranch));
+            _moq.Container.IsRegistered<IBranch>().Should().BeFalse();
 
             root.Tree.Branch.Leaf.Grow();
 
-            _moq.Mocks.Should().ContainKey(typeof(IBranch));
+            _moq.Container.IsRegistered<IBranch>().Should().BeTrue();
         }
 
         [Test]

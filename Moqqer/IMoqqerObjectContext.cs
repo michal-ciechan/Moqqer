@@ -1,4 +1,5 @@
 using System;
+using DryIoc;
 
 namespace MoqqerNamespace
 {
@@ -25,7 +26,7 @@ namespace MoqqerNamespace
             var interfaces = _type.GetInterfaces();
             foreach (var type in interfaces)
             {
-                _moqqer.Objects[type] = _implementation;
+                _moqqer.Container.RegisterInstance(type, _implementation, IfAlreadyRegistered.Replace);
             }
         }
     }
