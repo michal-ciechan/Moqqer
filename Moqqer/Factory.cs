@@ -18,7 +18,7 @@ namespace MoqqerNamespace
             var context = new CallContext<T>
             {
                 CallType = CallType.Constructor,
-                ParentClass = ctor.DeclaringType,
+                ParentClass = ctor?.DeclaringType,
                 Default = (T)defaultMock,
                 Constructor = ctor,
             };
@@ -32,7 +32,7 @@ namespace MoqqerNamespace
         {
             var context = new CallContext<T>
             {
-                CallType = method.IsPropertyGetter()
+                CallType = method?.IsPropertyGetter() == true
                     ? CallType.Property
                     : CallType.Method,
                 ParentClass = type,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using MoqqerNamespace.DefaultFactories;
@@ -367,13 +368,21 @@ namespace MoqqerNamespace
 		internal object GetInstance(Type type)
         {
             var def = Default(type);
-
+            
             if (def != null) return def;
 
-            if (type.IsMockable())
-                return Of(type).Object;
+            def = type.IsMockable() 
+                ? Of(type).Object 
+                : Object(type);                      
 
-            return Object(type);
+            if (Factories.TryGetValue(type, out var factory))
+            {
+                var res = factory.GetMethodParameter(type, null, null, def);
+
+                return res;
+            }
+
+            return def;
         }
 	    
 	    
@@ -385,8 +394,12 @@ namespace MoqqerNamespace
 
         internal object GetParameter(Type type, ConstructorInfo ctor)
 		{
-
-			var isFunc = type.IsFunc();
+            if (Objects.TryGetValue(type, out var obj))
+            {
+                return obj;
+            }
+            
+            var isFunc = type.IsFunc();
 
 			if (Factories.TryGetValue(type, out IFactory factory))
 			{

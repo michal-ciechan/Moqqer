@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard20</TargetFrameworks>
+    <TargetFrameworks>net46;netstandard20</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <Company>Michal Ciechan @ Codeperf.net</Company>
     <Authors>Michal Ciechan @ Codeperf.net</Authors>
@@ -9,7 +9,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RootNamespace>MoqqerNamespace</RootNamespace>
-    <Version>2.0.2</Version>
+    <Version>2.0.3</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.13.1" />

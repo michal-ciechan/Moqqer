@@ -2,11 +2,11 @@
 
 namespace MoqqerNamespace.Tests.TestClasses
 {
-    public class ClassWithFuncInCtor
+    public class ClassWithFuncReturningInterfaceInCtor
     {
         public Func<IDepencyA> FuncOfIDependencyA { get; }
 
-        public ClassWithFuncInCtor(Func<IDepencyA> funcOfIDependencyA)
+        public ClassWithFuncReturningInterfaceInCtor(Func<IDepencyA> funcOfIDependencyA)
         {
             FuncOfIDependencyA = funcOfIDependencyA;
         }
