@@ -537,5 +537,23 @@ namespace MoqqerNamespace.Tests
 
 			res.Parameter.Parameter().Should().BeSameAs(mock.Object);
 		}
+
+		[Test]
+		public void Create_NoAvailableConstructorToUse_ExceptionShouldContainMissingClasses()
+		{
+			Action act = () => _moq.Create<ClassWithCtorParamsOf<ClassWithoutParameterlessCtor, ClassHavingParameterlessConcreteClass>>(false);
+
+			var exception = act.Should()
+				.Throw<MoqqerException>()
+				.Which;
+
+			exception.Message.Should().Match("*Exception happened while trying to 'Create<ClassWithCtorParamsOf<ClassWithoutParameterlessCtor,ClassHavingParameterlessConcreteClass>>()*");
+			
+			var innerException = exception.InnerException.Should().BeOfType<MoqqerException>().Which;
+			
+			innerException.Message.Should().Match("*Could not find any possible constructors for type*");
+			innerException.Message.Should().Match("*ClassWithoutParameterlessCtor parameter1*");
+			innerException.Message.Should().Match("*ClassHavingParameterlessConcreteClass parameter2");
+		}
 	}
 }

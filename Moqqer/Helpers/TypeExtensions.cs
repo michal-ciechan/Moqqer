@@ -62,20 +62,35 @@ namespace MoqqerNamespace.Helpers
 
         public static ConstructorInfo FindConstructor(this Type type, Predicate<Type> canInject)
         {
+            bool IsInjectable(Type p)
+            {
+                return p.IsInjectable(canInject) ||
+                       p.IsInjectableFunc(canInject);
+            }
+
             var ctors = type.GetConstructors();
 
             var potentialCtors = ctors
                 .Where(c => c.GetParameters()
                     .Select(p => p.ParameterType)
-                    .All(p => p.IsInjectable(canInject) ||
-                              p.IsInjectableFunc(canInject)))
+                    .All(IsInjectable))
                 .ToList();
 
             if (potentialCtors.Count == 0)
-                throw new MoqqerException($"Could not find any possible constructors for type: {type.Describe()}");
+            {
+                var nonValidParams = ctors
+                    .SelectMany(c => c.GetParameters())
+                    .Where(p => !IsInjectable(p.ParameterType))
+                    .ToList();
+
+                var nonValidParamStrings = nonValidParams.Select(x => x.Describe());
+
+                var nonValidParamString = string.Join("\r\n\t", nonValidParamStrings);
+                
+                throw new MoqqerException($"Could not find any possible constructors for type: {type.Describe()}. Non injectable parameters:\r\n\t{nonValidParamString}");
+            }
 
             return potentialCtors.OrderByDescending(x => x.GetParameters().Length).First();
-
         }
 
         internal static bool IsFunc(this Type type)
