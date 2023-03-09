@@ -317,7 +317,7 @@ namespace MoqqerNamespace.Tests.Helpers
 
             var res = q.FirstOrDefault();
 
-            res.Should().BeEquivalentTo(integer, integer2);
+            res.Should().BeEquivalentTo(new []{ integer, integer2 });
         }
 
         [Test]
@@ -341,7 +341,7 @@ namespace MoqqerNamespace.Tests.Helpers
 
             var res = q.FirstOrDefault();
 
-            res.Should().BeEquivalentTo(integer, integer2);
+            res.Should().BeEquivalentTo(new []{ integer, integer2 });
         }
 
         [Test]
@@ -448,7 +448,7 @@ namespace MoqqerNamespace.Tests.Helpers
             var queryable = GetQueryable(key);
 
             var q = queryable.Select(x => (int?) x.L1.L2.L3.L4.L5.Integer & x.L1.L2.L3.L4.L5.Integer);
-            
+
             var res = q.FirstOrDefault();
 
             res.Should().Be(expected);
@@ -482,7 +482,7 @@ namespace MoqqerNamespace.Tests.Helpers
             var queryable = GetQueryable(key);
 
             var q = queryable.Select(x => (int?) x.L1.L2.L3.L4.L5.Integer | x.L1.L2.L3.L4.L5.Integer);
-            
+
             var res = q.FirstOrDefault();
 
             res.Should().Be(expected);
@@ -516,7 +516,7 @@ namespace MoqqerNamespace.Tests.Helpers
             var queryable = GetQueryable(key);
 
             var q = queryable.Select(x => (int?) x.L1.L2.L3.L4.L5.Integer ^ x.L1.L2.L3.L4.L5.Integer);
-            
+
             var res = q.FirstOrDefault();
 
             res.Should().Be(expected);
@@ -531,7 +531,7 @@ namespace MoqqerNamespace.Tests.Helpers
             var queryable = GetQueryable(key);
 
             var q = queryable.Select(x => (int?)-x.L1.L2.L3.L4.L5.Integer);
-            
+
             var res = q.FirstOrDefault();
 
             res.Should().Be(expected);
@@ -546,7 +546,7 @@ namespace MoqqerNamespace.Tests.Helpers
             var queryable = GetQueryable(key, x => x.L1.L2.L3.L4.L5.NullableInteger = 100);
 
             var q = queryable.Select(x => -x.L1.L2.L3.L4.L5.NullableInteger);
-            
+
             var res = q.FirstOrDefault();
 
             res.Should().Be(expected);

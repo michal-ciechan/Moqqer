@@ -1,5 +1,9 @@
 ﻿2.0.2
 - Fixed Interfaces Ref and Out params blowing up create
 
-2.0.1 
+2.0.1
 - Fixed Task`T` Generic method blowing up create
+
+3.0.0
+- BREAKING: No longer targeting net46, now lowest target is net462. This is due to `Moq` dependency
+- Upgraded Moq from 4.13.1 to 4.18.4

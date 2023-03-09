@@ -49,7 +49,7 @@ namespace MoqqerNamespace.Tests.Helpers
         public void GetMockableMethods_MethodNonMockableButCanInject_ReturnsMethod()
         {
             var type = typeof(IDefaultMethods);
-            
+
             var methods = type.GetMockableMethods(t => t == typeof(List<string>))
             .Select(x => x.Name).ToList();
 
@@ -106,7 +106,7 @@ namespace MoqqerNamespace.Tests.Helpers
                 .GetParameters()
                 .Select(x => x.ParameterType);
 
-            methods.Should().BeEquivalentTo(typeof(IBranch));
+            methods.Should().ContainSingle().Which.Should().Be(typeof(IBranch));
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace MoqqerNamespace.Tests.Helpers
                 .GetParameters()
                 .Select(x => x.ParameterType);
 
-            methods.Should().BeEquivalentTo(typeof(IBranch), typeof(ClassWithoutParameterlessCtor));
+            methods.Should().BeEquivalentTo(new []{typeof(IBranch), typeof(ClassWithoutParameterlessCtor)});
         }
 
         [Test]
@@ -228,7 +228,7 @@ namespace MoqqerNamespace.Tests.Helpers
             void Method7(Task<int> t, object a);
             void Method8(object[] a);
         }
-        
+
 
     }
 }
